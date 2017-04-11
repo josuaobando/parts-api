@@ -39,7 +39,7 @@ class TblManager extends Db
    *
    * @return array
    */
-  public function getPersonsAvailable($accountId, $amount, $agencyTypeId, $agencyId = 0)
+  public function getPersonsAvailable($accountId, $amount, $agencyTypeId, $agencyId)
   {
     $sql = "CALL persons_available('{accountId}', '{amount}', '{agencyTypeId}', '{agencyId}')";
 

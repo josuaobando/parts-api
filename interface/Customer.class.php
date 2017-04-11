@@ -98,6 +98,10 @@ class Customer
     {
       throw new InvalidStateException("invalid customer information");
     }
+    if(!$this->agencyId)
+    {
+      throw new InvalidStateException("The agency is not available");
+    }
   }
 
   /**

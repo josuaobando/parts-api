@@ -44,7 +44,7 @@ class Manager
    *
    * @throws InvalidStateException
    */
-	private function getPersonAvailable($amount, $agencyTypeId, $agencyId = 0)
+	private function getPersonAvailable($amount, $agencyTypeId, $agencyId)
 	{
 		$availableList = $this->tblManager->getPersonsAvailable($this->account->getAccountId(), $amount, $agencyTypeId, $agencyId);
 		if (!$availableList || !is_array($availableList) || count($availableList) == 0)
@@ -55,18 +55,18 @@ class Manager
 	
 		return $availableList[$selectedId];
 	}
-	
-	/**
-	 * start and create a new transaction
-	 *
-	 * @param WSRequest $wsRequest
-	 * @param int $transactionType Options: [Transaction::TYPE_RECEIVER | Transaction::TYPE_SENDER]
-	 *
-	 * @return WSResponse
-	 */
+
+  /**
+   * start and create a new transaction
+   *
+   * @param WSRequest $wsRequest
+   * @param int $transactionType
+   *
+   * @return \WSResponseOk
+   * @throws \InvalidStateException
+   */
 	public function startTransaction($wsRequest, $transactionType)
 	{
-	  $agencyTypeId = $wsRequest->requireNumericAndPositive('type');
 	  $amount = $wsRequest->requireNumericAndPositive('amount');
     $username = trim($wsRequest->requireNotNullOrEmpty('uid'));
 
@@ -78,48 +78,53 @@ class Manager
 		
 	  //create transaction object
 	  $transaction = new Transaction();
-	  $transaction->setTransactionTypeId($transactionType);
-	  $transaction->setTransactionStatusId($transactionStatus);
-	  $transaction->setAgencyTypeId($agencyTypeId);
-	  $transaction->setAccountId($this->account->getAccountId());
-	  $transaction->setCustomerId($customer->getCustomerId());
-	  $transaction->setUsername($username);
-	  $transaction->setAmount($amount);
-	  $transaction->setFee(0);
+    $transaction->setAccountId($this->account->getAccountId());
+    $transaction->setAgencyTypeId($customer->getAgencyTypeId());
+    $transaction->setAgencyId($customer->getAgencyId());
+    $transaction->setCustomerId($customer->getCustomerId());
+    $transaction->setTransactionTypeId($transactionType);
+    $transaction->setTransactionStatusId($transactionStatus);
+    $transaction->setUsername($username);
+    $transaction->setAmount($amount);
+    $transaction->setFee(0);
 	  
 	  //evaluate limits
 	  $limit = new Limit($transaction, $customer);
 	  $limit->evaluate();
 
 	  //select and block the person for following transactions
-	  $personSelected = $this->getPersonAvailable($amount, $agencyTypeId, $customer->getAgencyId());
+	  $personSelected = $this->getPersonAvailable($amount, $customer->getAgencyTypeId(), $customer->getAgencyId());
 	  $personId = $personSelected['Person_Id'];
-	  $agencyId = $personSelected['Agency_Id'];
 
 	  //create person object
-	  $person = new Person($personId, $agencyId);
+	  $person = new Person($personId);
 	  $person->block();
 	  
-	  //sets person and agency  
+	  //sets personId
 	  $transaction->setPersonId($person->getPersonId());
-	  $transaction->setAgencyId($person->getAgencyId());
 
 	  //create transaction after the validation of the data
 	  $transaction->create();
-	  	
-	  $wsResponse = new WSResponseOk();
-	  $wsResponse->addElement('transaction', $transaction);
-	  if($transactionType == Transaction::TYPE_RECEIVER)
-	  {
-	    $wsResponse->addElement('sender', $customer);
-	    $wsResponse->addElement('receiver', $person);
-	  }
-	  else
-	  {
-	    $wsResponse->addElement('sender', $person);
-	    $wsResponse->addElement('receiver', $customer);
-	  }
-	
+    if($transaction->getTransactionId())
+    {
+      $wsResponse = new WSResponseOk();
+      $wsResponse->addElement('transaction', $transaction);
+      if($transactionType == Transaction::TYPE_RECEIVER)
+      {
+        $wsResponse->addElement('sender', $customer);
+        $wsResponse->addElement('receiver', $person);
+      }
+      else
+      {
+        $wsResponse->addElement('sender', $person);
+        $wsResponse->addElement('receiver', $customer);
+      }
+    }
+    else
+    {
+      throw new InvalidStateException("The Transaction not has been created. Please, try later!");
+    }
+
 	  return $wsResponse;
 	}
 	
@@ -263,11 +268,11 @@ class Manager
 	  $personId = $personSelected['Person_Id'];
 	   
 	  //unblock current person
-	  $currentPerson = new Person($transaction->getPersonId(), $transaction->getAgencyId());
+	  $currentPerson = new Person($transaction->getPersonId());
 	  $currentPerson->unblock();
 	  
 	  //block new person
-	  $newPerson = new Person($personId, $transaction->getAgencyId());
+	  $newPerson = new Person($personId);
 	  $newPerson->block();
 	  
 	  //update transaction

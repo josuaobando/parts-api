@@ -16,7 +16,6 @@ class Person
   private $stateName;
   private $available;
   private $name;
-  private $agencyId;
 
   private $personalId;
   private $typeId;
@@ -125,14 +124,6 @@ class Person
   }
 
   /**
-   * @return int
-   */
-  public function getAgencyId()
-  {
-    return $this->agencyId;
-  }
-
-  /**
    * get the name
    *
    * @return string
@@ -188,12 +179,10 @@ class Person
    * new instance of receiver
    *
    * @param int $personId
-   * @param int $agencyId
    */
-  public function __construct($personId, $agencyId)
+  public function __construct($personId)
   {
     $this->personId = $personId;
-    $this->agencyId = $agencyId;
 
     $this->tblPerson = TblPerson::getInstance();
     $personData = $this->tblPerson->getPerson($personId);

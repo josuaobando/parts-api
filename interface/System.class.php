@@ -14,20 +14,10 @@ class System
   private $tblSystem;
 
   /**
-   * Account reference
-   *
-   * @var Account
-   */
-  private $account;
-
-  /**
    * Constructor
-   *
-   * @param Account $account
    */
-  public function __construct($account)
+  public function __construct()
   {
-    $this->account = $account;
     $this->tblSystem = TblSystem::getInstance();
   }
 
@@ -69,27 +59,34 @@ class System
    * get a list of transactions by status id
    *
    * @param int $statusId
+   * @param int $accountId
    *
    * @return array
    */
-  public function transactions($statusId)
+  public function transactions($statusId, $accountId)
   {
-    return $this->tblSystem->getTransactions($statusId, $this->account->getAccountId());
+    return $this->tblSystem->getTransactions($statusId, $accountId);
   }
 
   /**
    * get a list of transactions report
    *
    * @param int $statusId
+   * @param int $transactionTypeId
+   * @param int $filterAgencyType
+   * @param int $accountId
    * @param string $beginDate
    * @param string $endDate
    * @param string $controlNumber
+   * @param string $customer
+   * @param int $pageStart
+   * @param int $pageSize
    *
    * @return array
    */
-  public function transactionsReport($statusId, $beginDate = "", $endDate = "", $controlNumber = "")
+  public function transactionsReport($statusId, $transactionTypeId, $filterAgencyType, $accountId, $beginDate, $endDate, $controlNumber, $customer, $pageStart, $pageSize)
   {
-    return $this->tblSystem->getTransactionsReport($statusId, $this->account->getAccountId(), $beginDate, $endDate, $controlNumber);
+    return $this->tblSystem->getTransactionsReport($statusId, $transactionTypeId, $filterAgencyType, $accountId, $beginDate, $endDate, $controlNumber, $customer, $pageStart, $pageSize);
   }
 
 }

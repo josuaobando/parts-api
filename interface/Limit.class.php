@@ -181,13 +181,13 @@ class Limit
       case self::LIMIT_TYPE_MIN:
         if($limitValue > $this->transaction->getAmount())
         {
-          throw new InvalidStateException("Limits: The minimum allowable amount is: ".$limit['Value']." USD");
+          throw new InvalidStateException("Limits: The minimum allowed amount is: ".$limit['Value']." USD");
         }
         break;
       case self::LIMIT_TYPE_MAX:
         if($limitValue < $this->transaction->getAmount())
         {
-          throw new InvalidStateException("Limits: The maximum allowable amount is: ".$limit['Value']." USD");
+          throw new InvalidStateException("Limits: The maximum allowed amount is: ".$limit['Value']." USD");
         }
         break;
       case self::LIMIT_TYPE_COUNT:

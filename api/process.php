@@ -176,7 +176,7 @@ function information($wsRequest)
       // Payout (Sender) Information
       if($transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED && $transaction->getTransactionTypeId() == Transaction::TYPE_SENDER)
       {
-        $person = new Person($transaction->getPersonId(), $transaction->getAgencyId());
+        $person = new Person($transaction->getPersonId());
         $wsResponse->addElement('sender', $person);
       }
 
