@@ -78,6 +78,9 @@ class MailManager
    */
   public static function sendAdvancedEmail($recipients, $subject, $body, $attachments = false, $from = null)
   {
+    //@TODO: pending send email
+    return true;
+
     $to = "";
     $cc = "";
     $bcc = "";
@@ -184,6 +187,9 @@ class MailManager
    */
   private static function sendStandardEmailNoAttachments($to, $subject, $body)
   {
+    //@TODO: pending send email
+    return true;
+
     $headers = 'MIME-Version: 1.0'."\r\n";
     if(MailManager::$htmlFormat)
     {
@@ -220,6 +226,9 @@ class MailManager
    */
   private static function sendStandardEmail($to, $subject, $message, $files = false)
   {
+    //@TODO: pending send email
+    return true;
+
     ini_set('sendmail_from', CoreConfig::MAIL_FROM);
     ini_set('SMTP', CoreConfig::MAIL_HOST);
     ini_set('smtp_port', CoreConfig::MAIL_PORT);
@@ -365,6 +374,9 @@ AKAM;
    */
   public static function sendEmail($recipients, $subject, $body, $attachments = false)
   {
+    //@TODO: pending send email
+    return true;
+
     if(is_array($recipients))
     {
       $to = "";
