@@ -97,6 +97,41 @@ class Log
 		$fullPath = CoreConfig::LOG_PATH . $logFile;
 		return file_exists($fullPath);
 	}
+
+  /**
+   * customer function for logging
+   *
+   * @param string $file
+   * @param string $message
+   * @param array $args
+   */
+  public static function custom($file, $message, $args = null)
+  {
+    if (!defined('CoreConfig::LOG_PATH') || !is_dir(CoreConfig::LOG_PATH))
+    {
+      //no valid path has been defined
+      return;
+    }
+
+    $datetime = date('Y-m-d H:i:s');
+
+    //replace variables if there is any
+    if ($args && is_array($args))
+    {
+      foreach ($args as $key=>$value)
+      {
+        $message = str_replace("{".$key."}", $value, $message);
+      }
+    }
+
+    $content = Log::$format;
+    $content = str_replace("%{datetime}", $datetime, $content);
+    $content = str_replace("%{message}", $message, $content);
+
+    $logFile = "/" . Log::$prefix . $file . Log::$extension;
+
+    @file_put_contents(CoreConfig::LOG_PATH . $logFile, $content, FILE_APPEND);
+  }
 	
 	/**
 	 * log information

@@ -115,12 +115,10 @@ class WSProcessor
   	$data['responseTime'] = $responseTime;
 	  MQueue::push(MQueue::TYPE_WEBSERVICE, $data);
 	}
-		
-	/**
-	 * this method processes the request and sends the response to the requester
-	 * 
-	 * @param WSRequest $wsRequest
-	 */
+
+  /**
+   * this method processes the request and sends the response to the requester
+   */
 	public static function process()
 	{
 		//get the current time for stats
