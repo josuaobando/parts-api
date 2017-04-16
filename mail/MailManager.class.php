@@ -4,7 +4,6 @@
  * Gustavo Granados
  * code is poetry
  */
-
 class MailManager
 {
 
@@ -18,7 +17,7 @@ class MailManager
 
   private static $lastError = null;
   private static $htmlFormat = true;
-  
+
   /**
    * Get last error
    *
@@ -26,206 +25,350 @@ class MailManager
    */
   public static function getLastError()
   {
-  	return MailManager::$lastError;
-      }
-  
+    return MailManager::$lastError;
+  }
+
   /**
    * set if the email is a html format
    *
    * @param bool $value
    */
   public static function setHtmlFormat($value)
+  {
+    MailManager::$htmlFormat = $value;
+  }
+
+  /**
+   * Method that allows separate by comma a string and convert to array
+   *
+   * @param string $string
+   *
+   * @return array
+   */
+  private static function getArrayToSendEmail($string)
+  {
+    $array = array();
+    $text = '';
+    for($index = 0; $index < strlen($string); $index++)
     {
-  	MailManager::$htmlFormat = $value;
+      if($string[$index] != ',')
+      {
+        $text .= $string[$index];
+      }
+      else
+      {
+        array_push($array, $text);
+        $text = '';
+      }
     }
+
+    return $array;
+  }
 
   /**
    * Advanced method to send emails with attachments
    *
-   * @param string $to
-   * @param string $subject
-   * @param string $body
-   * @param array $attachments
+   * @param $recipients
+   * @param $subject
+   * @param $body
+   * @param bool $attachments
+   * @param null $from
+   *
    * @return bool
    */
-  public static function sendAdvancedEmail($to, $subject, $body, $attachments = false)
+  public static function sendAdvancedEmail($recipients, $subject, $body, $attachments = false, $from = null)
   {
-  	if (Util::isDEV())
+    $to = "";
+    $cc = "";
+    $bcc = "";
+    if(is_array($recipients))
     {
-    	$to = CoreConfig::MAIL_DEV;
+      $to = $recipients['To'];
+      $cc = $recipients['Cc'];
+      $bcc = $recipients['Bcc'];
     }
-	  
-    $message = new Mail_mime();
-    $message->setHTMLBody($body);
-    if ($attachments && is_array($attachments))
+    else
     {
-      foreach ($attachments as $attachment)
+      $to = $recipients;
+    }
+
+    if(Util::isDEV())
+    {
+      $to = CoreConfig::MAIL_DEV;
+    }
+    if(is_array($recipients))
+    {
+      $recipients['To'] = $to;
+    }
+
+    $mailer = new PHPMailer();
+    if(MailManager::$htmlFormat)
+    {
+      $mailer->isHTML(true);
+      $mailer->Body = $body;
+    }
+    else
+    {
+      $mailer->Body = $body;
+    }
+
+    if($attachments && is_array($attachments))
+    {
+      //Attach multiple files one by one
+      if(!empty($attachments['tmp_name'][0]))
       {
-        $message->addAttachment($attachment);
+        for($index = 0; $index < count($attachments['tmp_name']); $index++)
+        {
+          $uploadFile = tempnam(sys_get_temp_dir(), sha1($attachments['name'][$index]));
+          $filename = $attachments['name'][$index];
+          if(move_uploaded_file($attachments['tmp_name'][$index], $uploadFile))
+          {
+            $mailer->addAttachment($uploadFile, $filename);
+          }
+        }
       }
     }
-    $body = $message->get();
-    
-    $extraheaders = array();
-    $extraheaders['From'] = MailManager::$from;
-    $extraheaders['To'] = $to;
-    $extraheaders['Subject'] = $subject;
-    
-    $headers = $message->headers($extraheaders);
 
-    $smtpInfo = array();
-    $smtpInfo['host'] = MailManager::$host;
-    $smtpInfo['port'] = MailManager::$port;
-    $smtpInfo['auth'] = MailManager::$auth;
-    $smtpInfo['username'] = MailManager::$username;
-    $smtpInfo['password'] = MailManager::$password;
-    
-    $smtp = Mail::factory('smtp', $smtpInfo);
-    $mail = $smtp->send($to, $headers, $body);
+    $mailer->setFrom($from ? $from : MailManager::$from);
+    $mailer->Subject = $subject;
 
-    if (PEAR::isError($mail))
+    $arrayTo = self::getArrayToSendEmail($to);
+    foreach($arrayTo as $t)
     {
-      MailManager::$lastError = $mail->getMessage();
+      $mailer->addAddress($t);
+    }
+
+    if($cc)
+    {
+      $arrayCC = self::getArrayToSendEmail($cc);
+      foreach($arrayCC as $c)
+      {
+        $mailer->addCC($c);
+      }
+    }
+
+    if($bcc)
+    {
+      $arrayBCC = self::getArrayToSendEmail($bcc);
+      foreach($arrayBCC as $b)
+      {
+        $mailer->addCC($b);
+      }
+    }
+
+    $mailer->isSMTP();
+    $mailer->Host = MailManager::$host;
+    $mailer->Port = MailManager::$port;
+    $mailer->SMTPAuth = MailManager::$auth;
+    $mailer->Username = MailManager::$username;
+    $mailer->Password = MailManager::$password;
+
+    if(!$mailer->send())
+    {
+      MailManager::$lastError = 'Email was not sent';
+
       return false;
     }
-    
+
     return true;
   }
-  
+
   /**
    * Standard method to send emails using php config file
    *
-   * @param array $to
-   * @param string $subject
-   * @param string $body
-   * @param array $attachments
+   * @param $to
+   * @param $subject
+   * @param $body
+   *
    * @return bool
    */
   private static function sendStandardEmailNoAttachments($to, $subject, $body)
   {
-  	
-    $headers  = 'MIME-Version: 1.0' . "\r\n";
-    if (MailManager::$htmlFormat)
+    $headers = 'MIME-Version: 1.0'."\r\n";
+    if(MailManager::$htmlFormat)
     {
-    	$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+      $headers .= 'Content-type: text/html; charset=iso-8859-1'."\r\n";
     }
-    else 
+    else
     {
-    	$headers .= 'Content-type: text/plain; charset=iso-8859-2' . "\r\n";
+      $headers .= 'Content-type: text/plain; charset=iso-8859-2'."\r\n";
     }
-    $headers .= 'From: ' . MailManager::$from . "\r\n";
-    if (Util::isDEV())
+    $headers .= 'From: '.MailManager::$from."\r\n";
+    if(Util::isDEV())
     {
-    	$to = CoreConfig::MAIL_DEV;
+      $to = CoreConfig::MAIL_DEV;
     }
-    if (@mail($to, $subject, $body, $headers, "-f".MailManager::$return))
+    if(@mail($to, $subject, $body, $headers, "-f".MailManager::$return))
     {
-    	return true;
+      return true;
     }
-    
+
     MailManager::$lastError = 'Email was not sent';
+
     return false;
   }
-  
-  private static function sendStandardEmail($to, $subject, $body, $attachments = false)
+
+  /**
+   * send standard email using default php function
+   *
+   * @param $to
+   * @param $subject
+   * @param $message
+   * @param bool $files
+   *
+   * @return bool
+   */
+  private static function sendStandardEmail($to, $subject, $message, $files = false)
   {
-  	ini_set('sendmail_from', CoreConfig::MAIL_FROM);
-  	ini_set('SMTP', CoreConfig::MAIL_HOST);
-		ini_set('smtp_port', CoreConfig::MAIL_PORT);
+    ini_set('sendmail_from', CoreConfig::MAIL_FROM);
+    ini_set('SMTP', CoreConfig::MAIL_HOST);
+    ini_set('smtp_port', CoreConfig::MAIL_PORT);
 
-  	if (!$attachments)
-  	{
-  		return MailManager::sendStandardEmailNoAttachments($to, $subject, $body);
-  	}
-  	
-  	if (Util::isDEV())
+    if(!$files)
     {
-    	$to = CoreConfig::MAIL_DEV;
+      return MailManager::sendStandardEmailNoAttachments($to, $subject, $message);
     }
-  	
-  	foreach ($attachments as $k=>$v)
-  	{
-  		$fileName = $k;
-  		$file = $v;
-  		break;
-  	}
-  	
-		//create a boundary string. It must be unique
-		//so we use the MD5 algorithm to generate a random hash
-		$random_hash = md5(date('r', time()));
-		
-		//define the headers we want passed. Note that they are separated with \r\n
-		$headers = "From: ".MailManager::$from . "\r\n";
-		$headers .= "Reply-To: ".MailManager::$from . "\r\n";
-		
-		//add boundary string and mime type specification
-		$headers .= "\r\nContent-Type: multipart/alternative; boundary=\"PHP-alt-".$random_hash."\""; 
-		
-		//read the atachment file contents into a string,
-		//encode it with MIME base64,
-		//and split it into smaller chunks
-		$attachment = chunk_split(base64_encode(file_get_contents($file)));
-		
-		//define the body of the message.
-		ob_start(); //Turn on output buffering
-		?>
 
---PHP-alt-<?php echo $random_hash; ?>
+    if(Util::isDEV())
+    {
+      $to = CoreConfig::MAIL_DEV;
+    }
 
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+    $isAttach = false;
+    $textMessage = strip_tags(nl2br($message), "<br>");
+    $htmlMessage = nl2br($message);
+    $fromEmail = strip_tags(MailManager::$from);
 
-<?php
-$bodyPlain = str_replace("<br />", "\r\n", $body);
-$bodyPlain = str_replace("<br/>", "\r\n", $bodyPlain);
-$bodyPlain = str_replace("<br>", "\r\n", $bodyPlain);
-echo $bodyPlain;
-?>
+    $boundary1 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
+    $boundary2 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
 
---PHP-alt-<?php echo $random_hash; ?>
+    //get attachments
+    for($index = 0; $index < count($files['name']); $index++)
+    {
+      if(is_uploaded_file($files['tmp_name'][$index]) && !empty($files['size'][$index]) && !empty($files['name'][$index]))
+      {
+        $isAttach = true;
+        $handle = fopen($files['tmp_name'][$index], 'rb');
+        $f_contents = fread($handle, $files['size'][$index]);
+        $fileAttachment[] = chunk_split(base64_encode($f_contents));
+        fclose($handle);
+        $fileType[] = $files['type'][$index];
+        $fileName[] = $files['name'][$index];
+      }
+    }
 
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
+    //Email without Attachment
+    //set headers
+    $headers = <<<AKAM
+From: <$fromEmail>
+Reply-To: $fromEmail
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+    boundary="$boundary1"
+AKAM;
 
-<?php echo nl2br($body); ?>
+    //set body
+    $body = <<<AKAM
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+    boundary="$boundary1"
 
---PHP-alt-<?php echo $random_hash; ?>--
+This is a multi-part message in MIME format.
 
---PHP-mixed-<?php echo $random_hash; ?>
+--$boundary1
+Content-Type: text/plain;
+    charset="windows-1256"
+Content-Transfer-Encoding: quoted-printable
 
-Content-Type: application/zip; name="<?php echo $fileName;?>"
+$textMessage
+--$boundary1
+Content-Type: text/html;
+    charset="windows-1256"
+Content-Transfer-Encoding: quoted-printable
+
+$htmlMessage
+
+--$boundary1--
+AKAM;
+
+    //HTML Email WIth Multiple Attachment
+    if($isAttach)
+    {
+
+      $attachments = '';
+      $headers = <<<AKAM
+From:<$fromEmail>
+Reply-To: $fromEmail
+MIME-Version: 1.0
+Content-Type: multipart/mixed;
+    boundary="$boundary1"
+AKAM;
+
+      for($count = 0; $count < count($fileType); $count++)
+      {
+        $attachments .= <<<ATTA
+--$boundary1
+Content-Type: $fileType[$count];
+    name="$fileName[$index]"
 Content-Transfer-Encoding: base64
-Content-Disposition: attachment
+Content-Disposition: attachment;
+    filename="$fileName[$count]"
 
-<?php echo $attachment; ?>
+$fileAttachment[$count]
 
---PHP-mixed-<?php echo $random_hash; ?>--
+ATTA;
+      }
 
-		<?php
-		//copy current buffer contents into $message variable and delete current output buffer
-		$message = ob_get_clean();
-		//send the email
-		$mail_sent = @mail( $to, $subject, $message, $headers, "-f".MailManager::$return );
+      $body = <<<AKAM
+This is a multi-part message in MIME format.
 
-		//if the message is sent successfully print "Mail sent". Otherwise print "Mail failed"
-		return  $mail_sent ? true : false;
+--$boundary1
+Content-Type: multipart/alternative;
+    boundary="$boundary2"
+
+--$boundary2
+Content-Type: text/plain;
+    charset="windows-1256"
+Content-Transfer-Encoding: quoted-printable
+
+$textMessage
+--$boundary2
+Content-Type: text/html;
+    charset="windows-1256"
+Content-Transfer-Encoding: quoted-printable
+
+$htmlMessage
+
+--$boundary2--
+
+$attachments
+--$boundary1--
+AKAM;
+    }
+
+    //Sending Email
+    $sentEmail = mail($to, $subject, $body, $headers);
+
+    //if the message is sent successfully print "Mail sent". Otherwise print "Mail failed"
+    return $sentEmail ? true : false;
   }
 
   /**
    * Main method to send emails
    *
-   * @param array $recipients
-   * @param string $subject
-   * @param string $body
+   * @param $recipients
+   * @param $subject
+   * @param $body
    * @param array $attachments
+   *
    * @return bool
    */
   public static function sendEmail($recipients, $subject, $body, $attachments = false)
   {
-    if (is_array($recipients))
+    if(is_array($recipients))
     {
       $to = "";
-      foreach ($recipients as $email)
+      foreach($recipients as $email)
       {
         $to .= "$email,";
       }
@@ -236,18 +379,55 @@ Content-Disposition: attachment
     }
 
     MailManager::$lastError = null;
-    
-    if (CoreConfig::MAIL_STANDARD)
+
+    if(CoreConfig::MAIL_STANDARD)
     {
-    	$result = MailManager::sendStandardEmail($to, $subject, $body, $attachments);
+      $result = MailManager::sendStandardEmail($to, $subject, $body, $attachments);
     }
-    else 
+    else
     {
-    	$result = MailManager::sendAdvancedEmail($to, $subject, $body, $attachments);
+      $result = MailManager::sendAdvancedEmail($to, $subject, $body, $attachments);
     }
-    
+
     MailManager::$htmlFormat = true;
-    
+
+    return $result;
+  }
+
+  /**
+   * Send Email
+   *
+   * @param $pTo
+   * @param $pCC
+   * @param $pBCC
+   * @param $subject
+   * @param $body
+   * @param bool $attachments
+   *
+   * @return bool
+   */
+  public static function sendEmailReport($pTo, $pCC, $pBCC, $subject, $body, $attachments = false)
+  {
+    $recipients = array();
+    if($pTo)
+    {
+      $recipients["To"] = $pTo;
+    }
+    if($pCC)
+    {
+      $recipients["Cc"] = $pCC;
+    }
+    if($pBCC)
+    {
+      $recipients["Bcc"] = $pBCC;
+    }
+
+    MailManager::$lastError = null;
+
+    $result = MailManager::sendAdvancedEmail($recipients, $subject, $body, $attachments);
+
+    MailManager::$htmlFormat = true;
+
     return $result;
   }
 
@@ -255,15 +435,17 @@ Content-Disposition: attachment
    * Get the list of email address to send the email
    *
    * @param array $emailGroups
+   *
    * @return array
    */
   public static function getRecipients($emailGroups = array('Programmers'))
   {
-  	$recipients = array();
-    if (count($recipients) == 0)
+    $recipients = array();
+    if(count($recipients) == 0)
     {
       array_push($recipients, CoreConfig::MAIL_DEV); //default
     }
+
     return $recipients;
   }
 
@@ -274,7 +456,8 @@ Content-Disposition: attachment
    * @param string $methodName
    * @param string $description
    */
-  public static function sendWarningEmail($className, $methodName, $description){
+  public static function sendWarningEmail($className, $methodName, $description)
+  {
     $body = "<b>Warning</b><br><br>";
     $body .= "<b>Class Name: </b> $className<br>";
     $body .= "<b>Method Name: </b> $methodName<br>";
@@ -285,12 +468,11 @@ Content-Disposition: attachment
   /**
    * Use this method to send a critical email, like db errors, or logic errors
    *
-   * @param string $className
-   * @param string $methodName
-   * @param string $subject
-   * @param string $description
+   * @param $subject
+   * @param $description
    */
-  public static function sendCriticalErrorEmail($subject, $description){
+  public static function sendCriticalErrorEmail($subject, $description)
+  {
     $body = "<b>Critical Error</b><br><br>";
     $body .= "<b>Description: </b> $description<br>";
     MailManager::sendEmail(MailManager::getRecipients(), $subject, $body);
@@ -302,43 +484,14 @@ Content-Disposition: attachment
    * @param string $subject
    * @param string $description
    */
-  public static function sendInfoEmail($subject, $description){
+  public static function sendInfoEmail($subject, $description)
+  {
     $body = "<b>Information</b><br><br>";
     $body .= "<b>Description: </b> $description<br>";
 
     MailManager::sendEmail(MailManager::getRecipients(), $subject, $body);
   }
-  
-  /**
-   * get email template and replace variables
-   * 
-   * @param string $name
-   * @param array $params [optional]
-   * @return string
-   */
-  public static function getEmailTemplate($name, $params = array())
-  {
-  	$templatePath = CoreConfig::TEMPLATE_PATH.$name.CoreConfig::TEMPLATE_FILE_EXTENSION;
-  	
-  	if(!Util::file_exists($templatePath))
-  	{
-  		$template = "";
-  	}else
-  	{
-  	  $template = file_get_contents($templatePath,FILE_USE_INCLUDE_PATH);
 
-	  	if(count($params) > 0)
-	  	{
-	  		foreach ($params as $key=>$value) 
-	    	{
-					$template = str_replace("{".$key."}", $value, $template);
-	    	}  		
-	  	}  		
-  	}
-  	
-    return $template;
-  }
-  
 }
 
 ?>
