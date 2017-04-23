@@ -1,0 +1,15 @@
+php_value include_path ".;C:\Server\PHP\PEAR;D:\Development\DSGit\dinero-api"
+
+php_flag short_open_tag on
+php_flag display_errors on
+php_value error_reporting 6135
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+ RewriteRule ^deposit/([^/]+)/$ api/process.php?f=$1 [QSA]
+ RewriteRule ^withdraw/([^/]+)/$ api/process.php?f=$1 [QSA]
+ RewriteRule ^document/(.*) api/document/DineroSeguroHF_API.html [L]
+</IfModule>
