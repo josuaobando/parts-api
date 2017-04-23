@@ -1,6 +1,6 @@
 .project
 .idea
-.htaccess
 dev
 logs
 /config/CoreConfig.php
+/.htaccess
