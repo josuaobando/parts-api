@@ -172,6 +172,10 @@ class Manager
 		//restore and load transaction information
 		$transaction = new Transaction();
 		$transaction->restore($transactionId);
+		if(!$transaction->getTransactionId())
+		{
+      throw new InvalidStateException("this transaction not exist or not can be loaded: " . $transactionId);
+    }
 		
 		$wsRequest->putParam('type', $transaction->getAgencyTypeId());
 	
