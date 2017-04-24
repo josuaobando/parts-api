@@ -71,17 +71,18 @@ class Account
   private $tblAccount;
 
   /**
-   * new Account instance
+   * Account constructor.
    *
-   * @param string $username
+   * @param null $username
    */
-  public function __construct($username)
+  public function __construct($username = null)
   {
     $this->tblAccount = TblAccount::getInstance();
-
-    $this->username = $username;
-
-    $this->loadAccount();
+    if($username)
+    {
+      $this->username = $username;
+      $this->loadAccount();
+    }
   }
 
   /**
