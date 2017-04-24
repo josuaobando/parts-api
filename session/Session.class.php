@@ -30,6 +30,26 @@ class Session
     return $account;
   }
 
+  /**
+   * @return array
+   */
+  public static function getCountries()
+  {
+    $countriesSession = $_SESSION['countries'];
+    if(!$countriesSession)
+    {
+      $tblCountry = TblCountry::getInstance();
+      $countries = $tblCountry->getCountries();
+      $_SESSION['countries'] = $countries;
+    }
+    else
+    {
+      $countries = $countriesSession;
+    }
+
+    return $countries;
+  }
+
 }
 
 ?>
