@@ -6,6 +6,9 @@
 class Session
 {
 
+  const SID_ACCOUNT = 'account';
+  const SID_COUNTRIES = 'countries';
+
   /**
    * get account from session
    *
@@ -16,7 +19,7 @@ class Session
   public static function getAccount($username = null)
   {
     $account = new Account();
-    $accountSession = $_SESSION['account'];
+    $accountSession = $_SESSION[self::SID_ACCOUNT];
     if($accountSession && $accountSession instanceof Account)
     {
       $account = $accountSession;
@@ -24,23 +27,25 @@ class Session
     elseif($username)
     {
       $account = new Account($username);
-      $_SESSION['account'] = $account;
+      $_SESSION[self::SID_ACCOUNT] = $account;
     }
 
     return $account;
   }
 
   /**
+   * get countries
+   *
    * @return array
    */
   public static function getCountries()
   {
-    $countriesSession = $_SESSION['countries'];
+    $countriesSession = $_SESSION[self::SID_COUNTRIES];
     if(!$countriesSession)
     {
       $tblCountry = TblCountry::getInstance();
       $countries = $tblCountry->getCountries();
-      $_SESSION['countries'] = $countries;
+      $_SESSION[self::SID_COUNTRIES] = $countries;
     }
     else
     {
