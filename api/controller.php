@@ -26,9 +26,7 @@ function startController()
   $sessionId = $wsRequest->getParam('sid');
   if($sessionId)
   {
-    session_id($sessionId);
-    session_start();
-
+    Session::startSession($sessionId);
     $account = Session::getAccount();
     if($account->isAuthenticated())
     {
