@@ -48,19 +48,17 @@ class MailManager
   private static function getArrayToSendEmail($string)
   {
     $array = array();
-    $text = '';
-    for($index = 0; $index < strlen($string); $index++)
+    $emails = '';
+
+    if(substr($string, -1) == ',')
     {
-      if($string[$index] != ',')
-      {
-        $text .= $string[$index];
-      }
-      else
-      {
-        array_push($array, $text);
-        $text = '';
-      }
+      $emails = substr($string, 0, -1);
     }
+    else
+    {
+      $emails = $string;
+    }
+    $array = explode(',', $emails);
 
     return $array;
   }
@@ -68,19 +66,15 @@ class MailManager
   /**
    * Advanced method to send emails with attachments
    *
-   * @param $recipients
-   * @param $subject
-   * @param $body
-   * @param bool $attachments
-   * @param null $from
+   * @param string $recipients
+   * @param string $subject
+   * @param string $body
+   * @param array $attachments
    *
    * @return bool
    */
   public static function sendAdvancedEmail($recipients, $subject, $body, $attachments = false, $from = null)
   {
-    //@TODO: pending send email
-    return true;
-
     $to = "";
     $cc = "";
     $bcc = "";
@@ -99,12 +93,8 @@ class MailManager
     {
       $to = CoreConfig::MAIL_DEV;
     }
-    if(is_array($recipients))
-    {
-      $recipients['To'] = $to;
-    }
 
-    $mailer = new PHPMailer();
+    $mailer = new PHPMailerManager();
     if(MailManager::$htmlFormat)
     {
       $mailer->isHTML(true);
@@ -118,17 +108,9 @@ class MailManager
     if($attachments && is_array($attachments))
     {
       //Attach multiple files one by one
-      if(!empty($attachments['tmp_name'][0]))
+      foreach($attachments as $att)
       {
-        for($index = 0; $index < count($attachments['tmp_name']); $index++)
-        {
-          $uploadFile = tempnam(sys_get_temp_dir(), sha1($attachments['name'][$index]));
-          $filename = $attachments['name'][$index];
-          if(move_uploaded_file($attachments['tmp_name'][$index], $uploadFile))
-          {
-            $mailer->addAttachment($uploadFile, $filename);
-          }
-        }
+        $mailer->addAttachment($att);
       }
     }
 
@@ -179,17 +161,15 @@ class MailManager
   /**
    * Standard method to send emails using php config file
    *
-   * @param $to
-   * @param $subject
-   * @param $body
+   * @param array $to
+   * @param string $subject
+   * @param string $body
+   * @param array $attachments
    *
    * @return bool
    */
   private static function sendStandardEmailNoAttachments($to, $subject, $body)
   {
-    //@TODO: pending send email
-    return true;
-
     $headers = 'MIME-Version: 1.0'."\r\n";
     if(MailManager::$htmlFormat)
     {
@@ -217,18 +197,15 @@ class MailManager
   /**
    * send standard email using default php function
    *
-   * @param $to
-   * @param $subject
-   * @param $message
-   * @param bool $files
+   * @param string $to
+   * @param string $subject
+   * @param string $message
+   * @param array $files
    *
-   * @return bool
+   * @return boolean
    */
   private static function sendStandardEmail($to, $subject, $message, $files = false)
   {
-    //@TODO: pending send email
-    return true;
-
     ini_set('sendmail_from', CoreConfig::MAIL_FROM);
     ini_set('SMTP', CoreConfig::MAIL_HOST);
     ini_set('smtp_port', CoreConfig::MAIL_PORT);
@@ -243,28 +220,12 @@ class MailManager
       $to = CoreConfig::MAIL_DEV;
     }
 
-    $isAttach = false;
     $textMessage = strip_tags(nl2br($message), "<br>");
     $htmlMessage = nl2br($message);
     $fromEmail = strip_tags(MailManager::$from);
 
     $boundary1 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
     $boundary2 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
-
-    //get attachments
-    for($index = 0; $index < count($files['name']); $index++)
-    {
-      if(is_uploaded_file($files['tmp_name'][$index]) && !empty($files['size'][$index]) && !empty($files['name'][$index]))
-      {
-        $isAttach = true;
-        $handle = fopen($files['tmp_name'][$index], 'rb');
-        $f_contents = fread($handle, $files['size'][$index]);
-        $fileAttachment[] = chunk_split(base64_encode($f_contents));
-        fclose($handle);
-        $fileType[] = $files['type'][$index];
-        $fileName[] = $files['name'][$index];
-      }
-    }
 
     //Email without Attachment
     //set headers
@@ -301,11 +262,9 @@ $htmlMessage
 AKAM;
 
     //HTML Email WIth Multiple Attachment
-    if($isAttach)
-    {
 
-      $attachments = '';
-      $headers = <<<AKAM
+    $attachments = '';
+    $headers = <<<AKAM
 From:<$fromEmail>
 Reply-To: $fromEmail
 MIME-Version: 1.0
@@ -313,22 +272,38 @@ Content-Type: multipart/mixed;
     boundary="$boundary1"
 AKAM;
 
-      for($count = 0; $count < count($fileType); $count++)
+    for($count = 0; $count < count($files); $count++)
+    {
+      $file = $files[$count];
+      $file_size = filesize($file);
+      $handle = fopen($file, "r");
+      $content = fread($handle, $file_size);
+      fclose($handle);
+      $fileAttachment = chunk_split(base64_encode($content));
+      if(!function_exists('mime_content_type'))
       {
-        $attachments .= <<<ATTA
+        $fileType = MailManager::getContentTypeFromFile($file);
+      }
+      else
+      {
+        $fileType = mime_content_type($file);
+      }
+      $fileName = basename($file);
+
+      $attachments .= <<<ATTA
 --$boundary1
-Content-Type: $fileType[$count];
-    name="$fileName[$index]"
+Content-Type: $fileType;
+    name="$fileName"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
-    filename="$fileName[$count]"
+    filename="$fileName"
 
-$fileAttachment[$count]
+$fileAttachment
 
 ATTA;
-      }
+    }
 
-      $body = <<<AKAM
+    $body = <<<AKAM
 This is a multi-part message in MIME format.
 
 --$boundary1
@@ -353,7 +328,6 @@ $htmlMessage
 $attachments
 --$boundary1--
 AKAM;
-    }
 
     //Sending Email
     $sentEmail = mail($to, $subject, $body, $headers);
@@ -365,18 +339,15 @@ AKAM;
   /**
    * Main method to send emails
    *
-   * @param $recipients
-   * @param $subject
-   * @param $body
+   * @param array $recipients
+   * @param string $subject
+   * @param string $body
    * @param array $attachments
    *
    * @return bool
    */
   public static function sendEmail($recipients, $subject, $body, $attachments = false)
   {
-    //@TODO: pending send email
-    return true;
-
     if(is_array($recipients))
     {
       $to = "";
@@ -409,14 +380,14 @@ AKAM;
   /**
    * Send Email
    *
-   * @param $pTo
-   * @param $pCC
-   * @param $pBCC
-   * @param $subject
-   * @param $body
-   * @param bool $attachments
+   * @param string $pTo
+   * @param string $pCC
+   * @param string $pBCC
+   * @param string $subject
+   * @param string $body
+   * @param URI $attachments
    *
-   * @return bool
+   * @return boolean
    */
   public static function sendEmailReport($pTo, $pCC, $pBCC, $subject, $body, $attachments = false)
   {
@@ -480,8 +451,10 @@ AKAM;
   /**
    * Use this method to send a critical email, like db errors, or logic errors
    *
-   * @param $subject
-   * @param $description
+   * @param string $className
+   * @param string $methodName
+   * @param string $subject
+   * @param string $description
    */
   public static function sendCriticalErrorEmail($subject, $description)
   {
@@ -502,6 +475,155 @@ AKAM;
     $body .= "<b>Description: </b> $description<br>";
 
     MailManager::sendEmail(MailManager::getRecipients(), $subject, $body);
+  }
+
+  /**
+   * get email template and replace variables
+   *
+   * @param string $name
+   * @param array $params [optional]
+   * @param string $lang [optional]
+   *
+   * @return string
+   */
+  public static function getEmailTemplate($name, $params = array(), $lang = null)
+  {
+    if(!$lang)
+    {
+      $lang = Language::getLanguageCode();
+      $lang = strtoupper($lang);
+    }
+
+    $templatePath = CoreConfig::TEMPLATE_PATH.$name.$lang.CoreConfig::TEMPLATE_FILE_EXTENSION;
+    if(!Util::file_exists($templatePath))
+    {
+      $templatePath = CoreConfig::TEMPLATE_PATH.$name.CoreConfig::TEMPLATE_FILE_EXTENSION;
+      if(!Util::file_exists($templatePath))
+      {
+        return "";
+      }
+    }
+
+    $template = file_get_contents($templatePath, FILE_USE_INCLUDE_PATH);
+    if(count($params) > 0)
+    {
+      foreach($params as $key => $value)
+      {
+        $template = str_replace("{".$key."}", $value, $template);
+      }
+    }
+
+    return $template;
+  }
+
+  /**
+   * get email template and replace variables, return subject
+   *
+   * @param string $name
+   * @param array $params [optional]
+   * @param string $lang [optional]
+   *
+   * @return string
+   */
+  public static function getEmailTemplateAndSubject($name, $params = array(), $lang = null)
+  {
+    if($lang)
+    {
+      if(strpos($lang, "-"))
+      {
+        //remove the dialect
+        $lang = trim($lang);
+        $lang = substr($lang, 0, strpos($lang, "-"));
+        $lang = strtolower($lang);
+      }
+    }
+
+    $body = self::getEmailTemplate($name, $params, $lang);
+    $subject = Util::getStringBetween($body, ">>>>>", "<<<<<");
+    $body = str_replace(">>>>>$subject<<<<<", "", $body);
+
+    return array('subject' => $subject, 'body' => $body);
+  }
+
+  /**
+   * This function is used by php5.3 if the fileinfo library no exist. Return the file content type
+   * @param $file
+   * @return mixed|string
+   */
+
+  public static function getContentTypeFromFile($file)
+  {
+    $mime_types = array(
+
+      'txt' => 'text/plain',
+      'htm' => 'text/html',
+      'html' => 'text/html',
+      'php' => 'text/html',
+      'css' => 'text/css',
+      'js' => 'application/javascript',
+      'json' => 'application/json',
+      'xml' => 'application/xml',
+      'swf' => 'application/x-shockwave-flash',
+      'flv' => 'video/x-flv',
+
+      // images
+      'png' => 'image/png',
+      'jpe' => 'image/jpeg',
+      'jpeg' => 'image/jpeg',
+      'jpg' => 'image/jpeg',
+      'gif' => 'image/gif',
+      'bmp' => 'image/bmp',
+      'ico' => 'image/vnd.microsoft.icon',
+      'tiff' => 'image/tiff',
+      'tif' => 'image/tiff',
+      'svg' => 'image/svg+xml',
+      'svgz' => 'image/svg+xml',
+
+      // archives
+      'zip' => 'application/zip',
+      'rar' => 'application/x-rar-compressed',
+      'exe' => 'application/x-msdownload',
+      'msi' => 'application/x-msdownload',
+      'cab' => 'application/vnd.ms-cab-compressed',
+
+      // audio/video
+      'mp3' => 'audio/mpeg',
+      'qt' => 'video/quicktime',
+      'mov' => 'video/quicktime',
+
+      // adobe
+      'pdf' => 'application/pdf',
+      'psd' => 'image/vnd.adobe.photoshop',
+      'ai' => 'application/postscript',
+      'eps' => 'application/postscript',
+      'ps' => 'application/postscript',
+
+      // ms office
+      'doc' => 'application/msword',
+      'rtf' => 'application/rtf',
+      'xls' => 'application/vnd.ms-excel',
+      'ppt' => 'application/vnd.ms-powerpoint',
+
+      // open office
+      'odt' => 'application/vnd.oasis.opendocument.text',
+      'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
+    );
+
+    $ext = strtolower(array_pop(explode('.', $file)));
+    if(array_key_exists($ext, $mime_types))
+    {
+      return $mime_types[$ext];
+    }
+    elseif(function_exists('finfo_open'))
+    {
+      $finfo = finfo_open(FILEINFO_MIME);
+      $mimetype = finfo_file($finfo, $file);
+      finfo_close($finfo);
+      return $mimetype;
+    }
+    else {
+      return 'application/octet-stream';
+    }
   }
 
 }

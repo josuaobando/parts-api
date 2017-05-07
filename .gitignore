@@ -4,3 +4,4 @@ dev
 logs
 /config/CoreConfig.php
 /.htaccess
+/dev/
