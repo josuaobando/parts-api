@@ -75,6 +75,11 @@ class MailManager
    */
   public static function sendAdvancedEmail($recipients, $subject, $body, $attachments = false, $from = null)
   {
+    if(!CoreConfig::MAIL_SEND_ACTIVE)
+    {
+      return true;
+    }
+
     $to = "";
     $cc = "";
     $bcc = "";
@@ -147,11 +152,11 @@ class MailManager
     $mailer->SMTPAuth = MailManager::$auth;
     $mailer->Username = MailManager::$username;
     $mailer->Password = MailManager::$password;
+    $mailer->SMTPSecure = "tls";
 
     if(!$mailer->send())
     {
-      MailManager::$lastError = 'Email was not sent';
-
+      MailManager::$lastError = 'Email was not sent: '.$mailer->ErrorInfo;
       return false;
     }
 
@@ -206,6 +211,11 @@ class MailManager
    */
   private static function sendStandardEmail($to, $subject, $message, $files = false)
   {
+    if(!CoreConfig::MAIL_SEND_ACTIVE)
+    {
+      return true;
+    }
+
     ini_set('sendmail_from', CoreConfig::MAIL_FROM);
     ini_set('SMTP', CoreConfig::MAIL_HOST);
     ini_set('smtp_port', CoreConfig::MAIL_PORT);
@@ -348,6 +358,10 @@ AKAM;
    */
   public static function sendEmail($recipients, $subject, $body, $attachments = false)
   {
+    if(!CoreConfig::MAIL_SEND_ACTIVE)
+    {
+      return true;
+    }
     if(is_array($recipients))
     {
       $to = "";

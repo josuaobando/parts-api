@@ -59,6 +59,7 @@ class CoreConfig
 	/**
 	 * Mail configuration
 	 */
+  const MAIL_SEND_ACTIVE = false;
 	const MAIL_STANDARD = false;
 	const MAIL_RETURN = 'gustavo@cashier.localhost';
 	const MAIL_FROM = 'gustavo@cashier.localhost';
