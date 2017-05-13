@@ -92,9 +92,19 @@ class Manager
 	  $limit = new Limit($transaction, $customer);
 	  $limit->evaluate();
 
-	  //select and block the person for following transactions
-	  $personSelected = $this->getPersonAvailable($amount, $customer->getAgencyTypeId(), $customer->getAgencyId());
-	  $personId = $personSelected['Person_Id'];
+	  //check stickiness
+    $stickiness = new Stickiness();
+    $stickiness->setCustomerId($customer->getCustomerId());
+    $stickiness->restore();
+    //get person id from stickiness
+    $personId = $stickiness->getPersonId();
+
+    if(!$personId)
+    {
+      //select and block the person for following transactions
+      $personSelected = $this->getPersonAvailable($amount, $customer->getAgencyTypeId(), $customer->getAgencyId());
+      $personId = $personSelected['Person_Id'];
+    }
 
 	  //create person object
 	  $person = new Person($personId);
@@ -244,9 +254,24 @@ class Manager
     $transaction->setFee($fee);
     $transaction->setControlNumber($controlNumber);
     $transaction->setAccountId($this->account->getAccountId());
-    
+
     //update transaction after the validation of the data
-    return $transaction->update();
+    $update = $transaction->update();
+
+    if($transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED)
+    {
+      $stickiness = new Stickiness();
+      $stickiness->setCustomerId($transaction->getCustomerId());
+      $stickiness->setPersonId($transaction->getPersonId());
+      $stickiness->restore();
+      //if not exist, create it
+      if(!$stickiness->getStickinessId())
+      {
+        $stickiness->create();
+      }
+    }
+
+    return $update;
 	}
 	
 	/**

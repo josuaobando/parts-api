@@ -160,6 +160,14 @@ class Transaction
   /**
    * @return int
    */
+  public function getCustomerId()
+  {
+    return $this->customerId;
+  }
+
+  /**
+   * @return int
+   */
   public function getAgencyId()
   {
     return $this->agencyId;
