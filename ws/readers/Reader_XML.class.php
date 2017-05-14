@@ -7,12 +7,16 @@
 
 class Reader_XML extends Reader
 {
-	
-	/**
-	 * @see Reader::parse()
-	 * 
-	 * @return XmlElement
-	 */
+
+  /**
+   * @see Reader::parse()
+   *
+   * @param string $data
+   *
+   * @return XmlElement
+   *
+   * @throws WSException
+   */
 	public function parse($data)
 	{
 		$xmlParser = new XmlParser();

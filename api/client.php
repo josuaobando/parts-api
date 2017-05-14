@@ -36,19 +36,19 @@ function login($wsRequest)
 }
 
 /**
- * get agencies
+ * get countries
  *
  * @param WSRequest $wsRequest
  *
  * @return WSResponse
  */
-function getAgencies($wsRequest)
+function getCountries($wsRequest)
 {
   try
   {
-    $agencies = Session::getCountries();
+    $countries = Session::getCountries();
     $wsResponse = new WSResponseOk();
-    $wsResponse->addElement('agencies', $agencies);
+    $wsResponse->addElement('countries', $countries);
   }
   catch(InvalidParameterException $ex)
   {

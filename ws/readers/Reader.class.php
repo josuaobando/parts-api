@@ -4,17 +4,20 @@
  * Gustavo Granados
  * code is poetry
  */
-
-abstract class Reader implements IReader
+class Reader implements IReader
 {
-	
-	/**
-	 * @see IReader::parse()
-	 */
-	public function parse($data)
-	{
-		return $data;
-	}
+
+  /**
+   * @see IReader::parse()
+   *
+   * @param string $data
+   *
+   * @return string
+   */
+  public function parse($data)
+  {
+    return $data;
+  }
 
 }
 

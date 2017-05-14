@@ -72,6 +72,27 @@ class TblStickiness extends Db
     return $row;
   }
 
+  /**
+   * add stickiness provider message
+   *
+   * @param $stickinessId
+   * @param $request
+   * @param $response
+   *
+   * @return int
+   */
+  public function addProviderMessage($stickinessId, $request, $response)
+  {
+    $sql = "CALL spStickinessProvider_AddMessage('{stickinessId}', '{request}', '{response}')";
+
+    $params = array();
+    $params['stickinessId'] = $stickinessId;
+    $params['request'] = Util::toString($request);
+    $params['response'] = Util::toString($response);
+
+    return $this->executeUpdate($sql, $params);
+  }
+
 }
 
 ?>
