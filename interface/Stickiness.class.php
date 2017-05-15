@@ -143,7 +143,7 @@ class Stickiness
   /**
    * The web service checks if the sender is still available for new receiver's, is already linked to a receiver or is linked to a different merchant or company.
    */
-  private function process()
+  public function process()
   {
     $params = array();
     //authentication params
@@ -157,18 +157,30 @@ class Stickiness
 
     $wsConnector = new WS();
     $wsConnector->setReader(new Reader_Json());
-    $response = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check', $params);
+    $response = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params);
+
+    //add log
+    $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $response);
 
     if($response)
     {
       $code = $response->code;
-      if($code == self::STATUS_PENDING || $code == self::STATUS_LINKED)
+      switch($code)
       {
-
+        case self::STATUS_PENDING:
+        case self::STATUS_LINKED:
+        case self::STATUS_FAILED:
+          break;
+        case self::STATUS_LINKED_PENDING:
+          break;
+        case self::STATUS_LINKED_OTHER:
+          break;
+        default:
+          //do nothing
       }
+
     }
 
-    $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $response);
   }
 
   /**

@@ -4,7 +4,7 @@
  * Gustavo Granados
  * code is poetry
  */
-interface IReader
+interface ReaderI
 {
 
   /**

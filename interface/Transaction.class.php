@@ -367,22 +367,16 @@ class Transaction
     {
       case Transaction::STATUS_REQUESTED:
         return "requested";
-        break;
       case Transaction::STATUS_SUBMITTED:
         return "submitted";
-        break;
       case Transaction::STATUS_APPROVED:
         return "approved";
-        break;
       case Transaction::STATUS_REJECTED:
         return "rejected";
-        break;
       case Transaction::STATUS_CANCELED:
         return "canceled";
-        break;
       default:
         return "unknown";
-        break;
     }
 
     return "unknown";

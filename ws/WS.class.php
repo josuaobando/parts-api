@@ -106,7 +106,7 @@ class WS
   }
 
   /**
-   * set the reader for the respose
+   * set the reader for the response
    *
    * @param Reader $reader
    */
@@ -411,7 +411,6 @@ class WS
     }
 
     $this->success = $connector->success();
-
     if(!$this->success)
     {
       $this->lastError = $connector->getLastError();

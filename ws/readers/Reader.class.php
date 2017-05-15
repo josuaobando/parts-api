@@ -4,11 +4,11 @@
  * Gustavo Granados
  * code is poetry
  */
-class Reader implements IReader
+class Reader implements ReaderI
 {
 
   /**
-   * @see IReader::parse()
+   * @see ReaderI::parse()
    *
    * @param string $data
    *
