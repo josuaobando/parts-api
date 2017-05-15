@@ -155,9 +155,11 @@ class Stickiness
     //required param
     $params['sender'] = $this->customer;
 
+    $params_string = utf8_encode(http_build_query($params, '', '&'));
+
     $wsConnector = new WS();
     $wsConnector->setReader(new Reader_Json());
-    $response = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params);
+    $response = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params_string);
 
     //add log
     $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $response);
