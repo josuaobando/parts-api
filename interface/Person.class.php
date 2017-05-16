@@ -36,7 +36,7 @@ class Person
   private $tblPerson;
 
   /**
-   * @return the $personalId
+   * @return $personalId
    */
   public function getPersonalId()
   {
@@ -44,7 +44,7 @@ class Person
   }
 
   /**
-   * @return the $typeId
+   * @return $typeId
    */
   public function getTypeId()
   {
@@ -52,7 +52,7 @@ class Person
   }
 
   /**
-   * @return the $expirationDateId
+   * @return $expirationDateId
    */
   public function getExpirationDateId()
   {
@@ -60,7 +60,7 @@ class Person
   }
 
   /**
-   * @return the $address
+   * @return $address
    */
   public function getAddress()
   {
@@ -68,7 +68,7 @@ class Person
   }
 
   /**
-   * @return the $city
+   * @return $city
    */
   public function getCity()
   {
@@ -76,7 +76,7 @@ class Person
   }
 
   /**
-   * @return the $birthDate
+   * @return $birthDate
    */
   public function getBirthDate()
   {
@@ -84,7 +84,7 @@ class Person
   }
 
   /**
-   * @return the $maritalStatus
+   * @return $maritalStatus
    */
   public function getMaritalStatus()
   {
@@ -92,7 +92,7 @@ class Person
   }
 
   /**
-   * @return the $gender
+   * @return $gender
    */
   public function getGender()
   {
@@ -100,7 +100,7 @@ class Person
   }
 
   /**
-   * @return the $profession
+   * @return $profession
    */
   public function getProfession()
   {
@@ -108,7 +108,7 @@ class Person
   }
 
   /**
-   * @return the $phone
+   * @return $phone
    */
   public function getPhone()
   {

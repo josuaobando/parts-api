@@ -31,18 +31,22 @@ class TblStickiness extends Db
   /**
    * add new stickiness
    *
-   * @param int $customerId
-   * @param int $personId
+   * @param $customerId
+   * @param $personId
+   * @param $verificationId
+   * @param $verification
    *
    * @return int
    */
-  public function create($customerId, $personId)
+  public function create($customerId, $personId, $verificationId, $verification)
   {
-    $sql = "CALL spStickiness_Add('{customerId}', '{personId}', @stickinessId)";
+    $sql = "CALL spStickiness_Add('{customerId}', '{personId}', '{verificationId}', '{verification}', @stickinessId)";
 
     $params = array();
     $params['customerId'] = $customerId;
     $params['personId'] = $personId;
+    $params['verificationId'] = $verificationId;
+    $params['verification'] = $verification;
 
     $this->setOutputParams(array('stickinessId'));
     $this->executeUpdate($sql, $params);

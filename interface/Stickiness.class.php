@@ -12,11 +12,11 @@ class Stickiness
    */
   const STATUS_CODE_FAILED = '2';
   /**
-   * [Rejected] Already linked to a one of your receivers
+   * Already linked to a one of your receivers
    */
   const STATUS_CODE_LINKED = '3';
   /**
-   * [Rejected] Already linked to other receiver with a pending transaction.
+   * Already linked to a one of your pending receivers
    */
   const STATUS_CODE_LINKED_PENDING = '4';
   /**
@@ -32,6 +32,11 @@ class Stickiness
    * Approved Stickiness
    */
   const STATUS_VERIFICATION_APPROVED = 'approved';
+
+  /**
+   * Rejected Stickiness
+   */
+  const STATUS_VERIFICATION_REJECTED = 'rejected';
 
   const AGENCY_CANAS = '13';
   const AGENCY_PAVON = '14';
@@ -61,7 +66,7 @@ class Stickiness
    */
   private $agencyId;
   /**
-   * @var person
+   * @var string
    */
   private $person;
   /**
@@ -121,6 +126,22 @@ class Stickiness
   }
 
   /**
+   * @return string
+   */
+  public function getCustomer()
+  {
+    return $this->customer;
+  }
+
+  /**
+   * @param string $customer
+   */
+  public function setCustomer($customer)
+  {
+    $this->customer = $customer;
+  }
+
+  /**
    * @return int
    */
   public function getPersonId()
@@ -153,6 +174,22 @@ class Stickiness
   }
 
   /**
+   * @return string
+   */
+  public function getPerson()
+  {
+    return $this->person;
+  }
+
+  /**
+   * @param string
+   */
+  public function setPerson($person)
+  {
+    $this->person = $person;
+  }
+
+  /**
    * @return int
    */
   public function getAgencyId()
@@ -169,16 +206,19 @@ class Stickiness
   }
 
   /**
-   *  restore or get stickiness data
+   *  create new stickiness
    */
   public function create()
   {
-    $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId);
+    $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId, $this->verificationId, $this->verification);
   }
 
-  private function update()
+  /**
+   * update data
+   */
+  public function update()
   {
-    $this->stickinessId = $this->tblStickiness->update($this->stickinessId, $this->verificationId, $this->verification);
+    $this->tblStickiness->update($this->stickinessId, $this->verificationId, $this->verification);
   }
 
   /**
@@ -200,6 +240,25 @@ class Stickiness
         $this->personId = $stickinessData['Person_Id'];
         $this->personalId = $stickinessData['PersonalId'];
       }
+    }
+  }
+
+  //---------------------------------------------------
+  //--External connection to validate Person 2 Person--
+  //---------------------------------------------------
+
+  /**
+   * verification with provider
+   */
+  public function verify()
+  {
+    if($this->verificationId && $this->verification == self::STATUS_VERIFICATION_PENDING)
+    {
+      $this->complete();
+    }
+    elseif(!$this->verificationId && !$this->stickinessId)
+    {
+      $this->register();
     }
   }
 
@@ -243,15 +302,16 @@ class Stickiness
     {
 
     }
+
     return false;
   }
 
   /**
    * The web service checks if the sender is still available for new receiver's, is already linked to a receiver or is linked to a different merchant or company.
    */
-  public function process()
+  private function register()
   {
-    if(!$this->verificationId && $this->checkConnection())
+    if($this->checkConnection())
     {
       $result = null;
       try
@@ -269,39 +329,34 @@ class Stickiness
         $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params_string);
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }
-      catch(WSException $ex)
+      catch(Exception $ex)
       {
-
+        ExceptionManager::handleException($ex);
       }
 
       if($result)
       {
-        $code = $result->code;
-        switch($code)
+        if($result->code == self::STATUS_CODE_SUCCESS)
         {
-          case self::STATUS_CODE_SUCCESS:
-            if($result->response && $result->response->verification)
+          if($result->response && $result->response->verification)
+          {
+            $verification = $result->response->verification;
+            if($verification->status == self::STATUS_VERIFICATION_PENDING)
             {
-              $verification = $result->response->verification;
               $this->verificationId = $verification->id;
               $this->verification = $verification->status;
-              //update stickiness
-              $this->update();
+              $this->create();
             }
-            break;
-          case self::STATUS_CODE_FAILED:
-            //error
-            break;
-          case self::STATUS_CODE_LINKED_PENDING:
-            //do nothing
-          case self::STATUS_CODE_LINKED_OTHER:
-          case self::STATUS_CODE_LINKED:
-            throw new InvalidStateException("The Customer has Stickiness with another agency.");
-            break;
-          default:
-            //do nothing
+          }
         }
-
+        elseif($result->code == self::STATUS_CODE_LINKED_PENDING)
+        {
+          throw new InvalidStateException("Due to restrictions, we can not perform the transaction.");
+        }
+        elseif($result->code == self::STATUS_CODE_LINKED_OTHER)
+        {
+          throw new InvalidStateException("The Customer has Stickiness with another Person.");
+        }
       }
     }
   }
@@ -309,9 +364,9 @@ class Stickiness
   /**
    * The web service confirms or completes the transaction, in this service is where the sender gets linked to the receiver.
    */
-  public function complete()
+  private function complete()
   {
-    if($this->verificationId && $this->verification == self::STATUS_VERIFICATION_PENDING && $this->checkConnection())
+    if($this->checkConnection())
     {
       $result = null;
       try
@@ -329,40 +384,39 @@ class Stickiness
         $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'confirm/', $params_string);
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }
-      catch(WSException $ex)
+      catch(Exception $ex)
       {
-
+        ExceptionManager::handleException($ex);
       }
 
       if($result)
       {
-        $code = $result->code;
-        switch($code)
+        if($result->code == self::STATUS_CODE_SUCCESS)
         {
-          case self::STATUS_CODE_SUCCESS:
-            if($result->response && $result->response->verification)
+          if($result->response && $result->response->verification)
+          {
+            $verification = $result->response->verification;
+            if($verification->status == self::STATUS_VERIFICATION_APPROVED)
             {
-              $verification = $result->response->verification;
-              $this->verificationId = $verification->id;
               $this->verification = $verification->status;
-              //update stickiness
               $this->update();
             }
-            break;
-          case self::STATUS_CODE_FAILED:
-            //error
-            break;
-          case self::STATUS_CODE_LINKED_PENDING:
-          case self::STATUS_CODE_LINKED_OTHER:
-            break;
-          case self::STATUS_CODE_LINKED:
-            //do nothing
-            break;
-          default:
-            //do nothing
+          }
         }
-
+        elseif($result->code == self::STATUS_CODE_LINKED_OTHER)
+        {
+          if($result->response && $result->response->verification)
+          {
+            $verification = $result->response->verification;
+            if($verification->status == self::STATUS_VERIFICATION_APPROVED)
+            {
+              $this->verification = $verification->status;
+              $this->update();
+            }
+          }
+        }
       }
+
     }
   }
 
