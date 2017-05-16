@@ -53,6 +53,27 @@ class TblStickiness extends Db
   }
 
   /**
+   * update stickiness
+   *
+   * @param $stickinessId
+   * @param $verificationId
+   * @param $verification
+   *
+   * @return int
+   */
+  public function update($stickinessId, $verificationId, $verification)
+  {
+    $sql = "CALL spStickiness_Update('{stickinessId}', '{verificationId}', '{verification}')";
+
+    $params = array();
+    $params['stickinessId'] = $stickinessId;
+    $params['verificationId'] = $verificationId;
+    $params['verification'] = $verification;
+
+    return $this->executeUpdate($sql, $params);
+  }
+
+  /**
    * get stickiness data by Customer Id
    *
    * @param int $customerId
