@@ -293,7 +293,7 @@ class Stickiness
     try
     {
       //prepare request
-      $params_string = utf8_encode(http_build_query($this->authParams(), '', '&'));
+      $params_string = urldecode(http_build_query($this->authParams(), '', '&'));
 
       $wsConnector = new WS();
       $wsConnector->setReader(new Reader_Json());
@@ -325,7 +325,7 @@ class Stickiness
         $params['receiver'] = $this->person;
         $params['receiverId'] = $this->personalId;
         //prepare request
-        $params_string = utf8_encode(http_build_query($params, '', '&'));
+        $params_string = urldecode(http_build_query($params, '', '&'));
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
@@ -380,7 +380,7 @@ class Stickiness
         $params['receiver'] = $this->person;
         $params['receiverId'] = $this->personalId;
         //prepare request
-        $params_string = utf8_encode(http_build_query($params, '', '&'));
+        $params_string = urldecode(http_build_query($params, '', '&'));
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
