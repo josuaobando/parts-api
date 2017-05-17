@@ -275,7 +275,10 @@ class Stickiness
     $params['password'] = CoreConfig::WS_STICKINESS_CREDENTIAL_PASSWORD;
     $params['key'] = CoreConfig::WS_STICKINESS_CREDENTIAL_KEY;
     $params['agencyId'] = ($this->agencyId == 2 || $this->agencyId == 5) ? self::AGENCY_CANAS : self::AGENCY_PAVON;
-    $params['agencyId'] = 5;
+    if(Util::isDEV())
+    {
+      $params['agencyId'] = 5;
+    }
 
     return $params;
   }
