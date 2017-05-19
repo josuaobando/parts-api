@@ -8,6 +8,11 @@ class CoreConfig
 {
 
   /**
+   * Cache version to JS and CSS
+   */
+  const CACHE_VERSION = 1.0;
+
+  /**
    * define if the current environment is development or production
    *
    * @var bool
