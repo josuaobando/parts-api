@@ -252,13 +252,16 @@ class Stickiness
    */
   public function verify()
   {
-    if($this->verificationId && $this->verification == self::STATUS_VERIFICATION_PENDING)
+    if(CoreConfig::WS_STICKINESS_ACTIVE)
     {
-      $this->complete();
-    }
-    elseif(!$this->verificationId && !$this->stickinessId)
-    {
-      $this->register();
+      if($this->verificationId && $this->verification == self::STATUS_VERIFICATION_PENDING)
+      {
+        $this->complete();
+      }
+      elseif(!$this->verificationId && !$this->stickinessId)
+      {
+        $this->register();
+      }
     }
   }
 
