@@ -172,7 +172,6 @@ class CoreConfig
    */
   const WS_STICKINESS = 'http://dev.p2pcontroller.com/';
   const WS_STICKINESS_CREDENTIAL_COMPANY = '5';
-  const WS_STICKINESS_CREDENTIAL_AGENCY = '5';
   const WS_STICKINESS_CREDENTIAL_PASSWORD = '123';
   const WS_STICKINESS_CREDENTIAL_KEY = ')&#$987';
 
