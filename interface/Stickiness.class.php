@@ -64,7 +64,7 @@ class Stickiness
   /**
    * @var int
    */
-  private $agencyId;
+  private $agencyP2P;
   /**
    * @var string
    */
@@ -192,17 +192,17 @@ class Stickiness
   /**
    * @return int
    */
-  public function getAgencyId()
+  public function getAgencyP2P()
   {
-    return $this->agencyId;
+    return $this->agencyP2P;
   }
 
   /**
-   * @param int $agencyId
+   * @param int $agencyP2P
    */
-  public function setAgencyId($agencyId)
+  public function setAgencyP2P($agencyP2P)
   {
-    $this->agencyId = $agencyId;
+    $this->agencyP2P = $agencyP2P;
   }
 
   /**
@@ -234,11 +234,14 @@ class Stickiness
         $this->stickinessId = $stickinessData['Stickiness_Id'];
         $this->verificationId = $stickinessData['Verification_Id'];
         $this->verification = $stickinessData['Verification'];
+
         $this->customer = $stickinessData['Customer'];
         $this->customerId = $stickinessData['Customer_Id'];
         $this->person = $stickinessData['Person'];
         $this->personId = $stickinessData['Person_Id'];
         $this->personalId = $stickinessData['PersonalId'];
+
+        $this->agencyP2P = $stickinessData['AgencyP2P'];
       }
     }
   }
@@ -277,12 +280,7 @@ class Stickiness
     $params['companyId'] = CoreConfig::WS_STICKINESS_CREDENTIAL_COMPANY;
     $params['password'] = CoreConfig::WS_STICKINESS_CREDENTIAL_PASSWORD;
     $params['key'] = CoreConfig::WS_STICKINESS_CREDENTIAL_KEY;
-    $params['agencyId'] = ($this->agencyId == 2 || $this->agencyId == 5) ? self::AGENCY_CANAS : self::AGENCY_PAVON;
-    if(Util::isDEV())
-    {
-      $params['agencyId'] = 5;
-    }
-
+    $params['agencyId'] = $this->agencyP2P;
     return $params;
   }
 
