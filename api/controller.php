@@ -62,9 +62,9 @@ function ctrl_login()
 
 
 /**
- * get agencies
+ * get countries
  */
-function ctrl_getAgencies()
+function ctrl_getCountries()
 {
   require_once ('api/client.php');
 }

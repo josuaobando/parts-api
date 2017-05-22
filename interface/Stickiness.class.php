@@ -190,22 +190,6 @@ class Stickiness
   }
 
   /**
-   * @return int
-   */
-  public function getAgencyP2P()
-  {
-    return $this->agencyP2P;
-  }
-
-  /**
-   * @param int $agencyP2P
-   */
-  public function setAgencyP2P($agencyP2P)
-  {
-    $this->agencyP2P = $agencyP2P;
-  }
-
-  /**
    *  create new stickiness
    */
   public function create()
@@ -216,7 +200,7 @@ class Stickiness
   /**
    * update data
    */
-  public function update()
+  private function update()
   {
     $this->tblStickiness->update($this->stickinessId, $this->verificationId, $this->verification);
   }
@@ -261,7 +245,7 @@ class Stickiness
       {
         $this->complete();
       }
-      elseif(!$this->verificationId && !$this->stickinessId)
+      elseif(!$this->verificationId)
       {
         $this->register();
       }
@@ -293,18 +277,17 @@ class Stickiness
   {
     try
     {
-      //prepare request
-      $params_string = urldecode(http_build_query($this->authParams(), '', '&'));
+      $params = $this->authParams();
 
       $wsConnector = new WS();
       $wsConnector->setReader(new Reader_Json());
-      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'account/', $params_string);
+      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'account/', $params);
 
       return ($result && $result->code == 1);
     }
     catch(WSException $ex)
     {
-
+      ExceptionManager::handleException($ex);
     }
 
     return false;
@@ -325,12 +308,11 @@ class Stickiness
         $params['sender'] = $this->customer;
         $params['receiver'] = $this->person;
         $params['receiverId'] = $this->personalId;
-        //prepare request
-        $params_string = urldecode(http_build_query($params, '', '&'));
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params_string);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params);
+
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }
       catch(Exception $ex)
@@ -380,12 +362,11 @@ class Stickiness
         $params['verificationId'] = $this->verificationId;
         $params['receiver'] = $this->person;
         $params['receiverId'] = $this->personalId;
-        //prepare request
-        $params_string = urldecode(http_build_query($params, '', '&'));
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'confirm/', $params_string);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'confirm/', $params);
+
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }
       catch(Exception $ex)

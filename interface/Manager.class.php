@@ -108,7 +108,6 @@ class Manager
     $person = new Person($personId);
     if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA && !$stickiness->getStickinessId())
     {
-      $stickiness->setAgencyP2P($customer->getAgencyId());
       $stickiness->setCustomerId($customer->getCustomerId());
       $stickiness->setCustomer($customer->getCustomer());
       $stickiness->setPersonId($person->getPersonId());
