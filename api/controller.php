@@ -5,7 +5,7 @@
  * code is poetry
  */
 
-require_once ('system/Startup.class.php');
+require_once('system/Startup.class.php');
 
 /**
  * here is where we start processing the request
@@ -13,8 +13,8 @@ require_once ('system/Startup.class.php');
  */
 function startController()
 {
-	//create the request object
-	$wsRequest = new WSRequest($_REQUEST);
+  //create the request object
+  $wsRequest = new WSRequest($_REQUEST);
 
   //prefix in order to avoid a conflict with the function names in the webservices
   $prefix = "ctrl_";
@@ -31,25 +31,33 @@ function startController()
     if($account->isAuthenticated())
     {
       //call the proper function
-      if (function_exists($prefix.$f))
+      if(function_exists($prefix.$f))
       {
         //call the function and exit since the function will do the whole work
         call_user_func($prefix.$f);
         exit();
       }
+      else
+      {
+        //this section is to handle the invalid function error
+        $wsResponse = new WSResponseError("Invalid function in controller($f)");
+      }
+    }
+    else
+    {
+      //this section is to handle the invalid function error
+      $wsResponse = new WSResponseError('Session has expired');
     }
   }
-	
-	//this section is to handle the invalid function error
-	$wsResponse = new WSResponseError("Invalid function in controller($f)");
-	$format = $wsRequest->getParam(WSProcessor::REQUESTED_FORMAT, WSResponse::FORMAT_JSON);
-	$encoding = $wsRequest->getParam('encoding', 'UTF-8');
-			
-	//set the header of the response
-	Util::putResponseHeaders($format, $encoding);
-	
-	//send the object to the output converting it to string
-	echo $wsResponse->toString($format);
+
+  $format = $wsRequest->getParam(WSProcessor::REQUESTED_FORMAT, WSResponse::FORMAT_JSON);
+  $encoding = $wsRequest->getParam('encoding', 'UTF-8');
+
+  //set the header of the response
+  Util::putResponseHeaders($format, $encoding);
+
+  //send the object to the output converting it to string
+  echo $wsResponse->toString($format);
 }
 
 /**
@@ -57,16 +65,15 @@ function startController()
  */
 function ctrl_login()
 {
-  require_once ('api/client.php');
+  require_once('api/client.php');
 }
-
 
 /**
  * get countries
  */
 function ctrl_getCountries()
 {
-  require_once ('api/client.php');
+  require_once('api/client.php');
 }
 
 /**
