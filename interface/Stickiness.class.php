@@ -219,10 +219,17 @@ class Stickiness
         $this->verificationId = $stickinessData['Verification_Id'];
         $this->verification = $stickinessData['Verification'];
 
+        if(!$this->customer)
+        {
+          $this->customerId = $stickinessData['Customer_Id'];
+        }
         $this->customer = $stickinessData['Customer'];
-        $this->customerId = $stickinessData['Customer_Id'];
+
+        if(!$this->person)
+        {
+          $this->personId = $stickinessData['Person_Id'];
+        }
         $this->person = $stickinessData['Person'];
-        $this->personId = $stickinessData['Person_Id'];
         $this->personalId = $stickinessData['PersonalId'];
 
         $this->agencyP2P = $stickinessData['AgencyP2P'];
@@ -265,6 +272,7 @@ class Stickiness
     $params['password'] = CoreConfig::WS_STICKINESS_CREDENTIAL_PASSWORD;
     $params['key'] = CoreConfig::WS_STICKINESS_CREDENTIAL_KEY;
     $params['agencyId'] = $this->agencyP2P;
+
     return $params;
   }
 
