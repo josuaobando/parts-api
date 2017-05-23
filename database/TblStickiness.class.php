@@ -38,7 +38,7 @@ class TblStickiness extends Db
    *
    * @return int
    */
-  public function create($customerId, $personId, $verificationId, $verification)
+  public function create($customerId, $personId, $verificationId = null, $verification = null)
   {
     $sql = "CALL spStickiness_Add('{customerId}', '{personId}', '{verificationId}', '{verification}', @stickinessId)";
 

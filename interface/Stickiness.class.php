@@ -194,15 +194,23 @@ class Stickiness
    */
   public function create()
   {
-    $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId, $this->verificationId, $this->verification);
+    $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId);
   }
 
   /**
-   * update data
+   * @param $verificationId
+   * @param $verification
    */
-  private function update()
+  private function createProvider($verificationId, $verification)
   {
-    $this->tblStickiness->update($this->stickinessId, $this->verificationId, $this->verification);
+    if(!$this->stickinessId)
+    {
+      $this->tblStickiness->create($this->customerId, $this->personId, $this->verificationId, $this->verification);
+    }
+    else
+    {
+      $this->tblStickiness->update($this->stickinessId, $verificationId, $verification);
+    }
   }
 
   /**
@@ -248,11 +256,11 @@ class Stickiness
   {
     if(CoreConfig::WS_STICKINESS_ACTIVE)
     {
-      if($this->verificationId && $this->verification == self::STATUS_VERIFICATION_PENDING)
+      if($this->verification == self::STATUS_VERIFICATION_PENDING)
       {
         $this->complete();
       }
-      elseif(!$this->verificationId)
+      else
       {
         $this->register();
       }
@@ -267,6 +275,7 @@ class Stickiness
   private function authParams()
   {
     $params = array();
+
     $params['format'] = 'json';
     $params['companyId'] = CoreConfig::WS_STICKINESS_CREDENTIAL_COMPANY;
     $params['password'] = CoreConfig::WS_STICKINESS_CREDENTIAL_PASSWORD;
@@ -330,28 +339,30 @@ class Stickiness
 
       if($result)
       {
-        if($result->code == self::STATUS_CODE_SUCCESS)
+        switch($result->code)
         {
-          if($result->response && $result->response->verification)
-          {
-            $verification = $result->response->verification;
-            if($verification->status == self::STATUS_VERIFICATION_PENDING)
+          case self::STATUS_CODE_SUCCESS:
+          case self::STATUS_CODE_LINKED_PENDING:
+            if($result->response && $result->response->verification)
             {
-              $this->verificationId = $verification->id;
-              $this->verification = $verification->status;
-              $this->create();
+              $verification = $result->response->verification;
+              if($verification->status == self::STATUS_VERIFICATION_PENDING)
+              {
+                $this->createProvider($verification->id, $verification->status);
+              }
             }
-          }
-        }
-        elseif($result->code == self::STATUS_CODE_LINKED_PENDING)
-        {
-          throw new InvalidStateException("Due to restrictions, we can not perform the transaction.");
-        }
-        elseif($result->code == self::STATUS_CODE_LINKED_OTHER)
-        {
-          throw new InvalidStateException("The Customer has Stickiness with another Person.");
+            break;
+          case self::STATUS_CODE_LINKED:
+            throw new InvalidStateException("The Customer is linked to another Person.");
+            break;
+          case self::STATUS_CODE_LINKED_OTHER:
+            throw new InvalidStateException("The Customer is linked to another agency.");
+            break;
+          default:
+            //do nothing
         }
       }
+
     }
   }
 
@@ -384,29 +395,27 @@ class Stickiness
 
       if($result)
       {
-        if($result->code == self::STATUS_CODE_SUCCESS)
+        switch($result->code)
         {
-          if($result->response && $result->response->verification)
-          {
-            $verification = $result->response->verification;
-            if($verification->status == self::STATUS_VERIFICATION_APPROVED)
+          case self::STATUS_CODE_SUCCESS:
+          case self::STATUS_CODE_LINKED_PENDING:
+            if($result->response && $result->response->verification)
             {
-              $this->verification = $verification->status;
-              $this->update();
+              $verification = $result->response->verification;
+              if($verification->status == self::STATUS_VERIFICATION_APPROVED)
+              {
+                $this->createProvider($verification->id, $verification->status);
+              }
             }
-          }
-        }
-        elseif($result->code == self::STATUS_CODE_LINKED_OTHER)
-        {
-          if($result->response && $result->response->verification)
-          {
-            $verification = $result->response->verification;
-            if($verification->status == self::STATUS_VERIFICATION_APPROVED)
-            {
-              $this->verification = $verification->status;
-              $this->update();
-            }
-          }
+            break;
+          case self::STATUS_CODE_LINKED:
+            throw new InvalidStateException("The Customer is linked to another Person.");
+            break;
+          case self::STATUS_CODE_LINKED_OTHER:
+            throw new InvalidStateException("The Customer is linked to another agency.");
+            break;
+          default:
+            //do nothing
         }
       }
 
