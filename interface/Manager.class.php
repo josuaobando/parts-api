@@ -269,7 +269,6 @@ class Manager
     {
       $stickiness = new Stickiness();
       $stickiness->setCustomerId($transaction->getCustomerId());
-      $stickiness->setPersonId($transaction->getPersonId());
       $stickiness->restore();
       //if not exist, create it
       if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId())
@@ -278,6 +277,7 @@ class Manager
       }
       elseif($transaction->getAgencyTypeId() == Transaction::AGENCY_RIA && !$stickiness->getStickinessId())
       {
+        $stickiness->setPersonId($transaction->getPersonId());
         $stickiness->create();
       }
     }

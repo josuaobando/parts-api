@@ -205,7 +205,7 @@ class Stickiness
   {
     if(!$this->stickinessId)
     {
-      $this->tblStickiness->create($this->customerId, $this->personId, $this->verificationId, $this->verification);
+      $this->tblStickiness->create($this->customerId, $this->personId, $verificationId, $verification);
     }
     else
     {
@@ -226,21 +226,18 @@ class Stickiness
         $this->stickinessId = $stickinessData['Stickiness_Id'];
         $this->verificationId = $stickinessData['Verification_Id'];
         $this->verification = $stickinessData['Verification'];
+        $this->agencyP2P = $stickinessData['AgencyP2P'];
 
-        if(!$this->customer)
-        {
-          $this->customerId = $stickinessData['Customer_Id'];
-        }
+        $this->customerId = $stickinessData['Customer_Id'];
         $this->customer = $stickinessData['Customer'];
 
-        if(!$this->person)
+        if(!$this->personId)
         {
           $this->personId = $stickinessData['Person_Id'];
+          $this->person = $stickinessData['Person'];
+          $this->personalId = $stickinessData['PersonalId'];
         }
-        $this->person = $stickinessData['Person'];
-        $this->personalId = $stickinessData['PersonalId'];
 
-        $this->agencyP2P = $stickinessData['AgencyP2P'];
       }
     }
   }
@@ -342,6 +339,7 @@ class Stickiness
         switch($result->code)
         {
           case self::STATUS_CODE_SUCCESS:
+          case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
             if($result->response && $result->response->verification)
             {
@@ -350,10 +348,11 @@ class Stickiness
               {
                 $this->createProvider($verification->id, $verification->status);
               }
+              else
+              {
+                throw new InvalidStateException("The Customer is linked to another Person.");
+              }
             }
-            break;
-          case self::STATUS_CODE_LINKED:
-            throw new InvalidStateException("The Customer is linked to another Person.");
             break;
           case self::STATUS_CODE_LINKED_OTHER:
             throw new InvalidStateException("The Customer is linked to another agency.");
@@ -398,6 +397,7 @@ class Stickiness
         switch($result->code)
         {
           case self::STATUS_CODE_SUCCESS:
+          case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
             if($result->response && $result->response->verification)
             {
@@ -406,10 +406,11 @@ class Stickiness
               {
                 $this->createProvider($verification->id, $verification->status);
               }
+              else
+              {
+                throw new InvalidStateException("The Customer is linked to another Person.");
+              }
             }
-            break;
-          case self::STATUS_CODE_LINKED:
-            throw new InvalidStateException("The Customer is linked to another Person.");
             break;
           case self::STATUS_CODE_LINKED_OTHER:
             throw new InvalidStateException("The Customer is linked to another agency.");
