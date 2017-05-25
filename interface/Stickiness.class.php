@@ -289,13 +289,18 @@ class Stickiness
    */
   private function checkConnection()
   {
+    if(!CoreConfig::WS_STICKINESS_CHECK_CONNECTION)
+    {
+      return true;
+    }
+
     try
     {
       $params = $this->authParams();
 
       $wsConnector = new WS();
       $wsConnector->setReader(new Reader_Json());
-      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'account/', $params);
+      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'account/', $params);
 
       return ($result && $result->code == 1);
     }
@@ -325,7 +330,7 @@ class Stickiness
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'check/', $params);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'check/', $params);
 
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }
@@ -383,7 +388,7 @@ class Stickiness
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS.'confirm/', $params);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'confirm/', $params);
 
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
       }

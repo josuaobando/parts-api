@@ -176,7 +176,8 @@ class CoreConfig
    * P2P controller to check stickiness
    */
   const WS_STICKINESS_ACTIVE = false;
-  const WS_STICKINESS = 'http://dev.p2pcontroller.com/';
+  const WS_STICKINESS_CHECK_CONNECTION = false;
+  const WS_STICKINESS_URL = 'http://dev.p2pcontroller.com/';
   const WS_STICKINESS_CREDENTIAL_COMPANY = '5';
   const WS_STICKINESS_CREDENTIAL_PASSWORD = '123';
   const WS_STICKINESS_CREDENTIAL_KEY = ')&#$987';
