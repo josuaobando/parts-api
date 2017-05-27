@@ -173,7 +173,7 @@ class CoreConfig
   const SYS_ENCODING = 'UTF-8';
 
   /**
-   *
+   * Execute services
    */
   const CRON_JOBS_ACTIVE = false;
   const CRON_JOB_SERVICES = 'http://api.dinerosegurohf:8080/api/services.php';
