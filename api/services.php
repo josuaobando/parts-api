@@ -28,8 +28,6 @@ foreach($stickinessPending as $transaction)
 
     $stickiness->restore();
     $stickiness->verify();
-
-    break;
   }
   catch(Exception $ex)
   {
