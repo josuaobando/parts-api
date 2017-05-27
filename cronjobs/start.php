@@ -11,9 +11,5 @@ if(CoreConfig::CRON_JOBS_ACTIVE)
   $dataString = Util::toString($response);
   Log::custom('Job', $dataString);
 }
-else
-{
-  echo 'Services are turned off!';
-}
 
 ?>
