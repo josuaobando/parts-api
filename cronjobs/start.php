@@ -8,7 +8,8 @@ if(CoreConfig::CRON_JOBS_ACTIVE)
   $connector = new Connector();
   $response = $connector->loadContent(CoreConfig::CRON_JOB_SERVICES);
 
-  var_dump($response);
+  $dataString = Util::toString($response);
+  Log::custom('Job', $dataString);
 }
 else
 {
