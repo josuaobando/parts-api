@@ -68,21 +68,21 @@ class CoreConfig
   /**
    * Mail configuration
    */
-  const MAIL_SEND_ACTIVE = false;
+  const MAIL_SEND_ACTIVE = true;
   const MAIL_STANDARD = false;
-  const MAIL_RETURN = 'gustavo@cashier.localhost';
-  const MAIL_FROM = 'gustavo@cashier.localhost';
-  const MAIL_HOST = 'cashier.localhost';
-  const MAIL_PORT = '25';
-  const MAIL_USERNAME = 'gustavo@cashier.localhost';
-  const MAIL_PASSWORD = '241079';
+  const MAIL_RETURN = 'mail@mail.com';
+  const MAIL_FROM = 'mail@mail.com';
+  const MAIL_HOST = 'smtp.mail.com';
+  const MAIL_PORT = 587;
+  const MAIL_USERNAME = 'mail@mail.com';
+  const MAIL_PASSWORD = 'password';
   const MAIL_AUTH = true;
-  const MAIL_DEV = 'gustavo@cashier.localhost';
+  const MAIL_DEV = 'dev@mail.com';
 
   /**
    * URL where the message queue service is located
    */
-  const MESSAGE_QUEUE_URL = 'http://api.localhost/mqueue/ws/mQueueProcessor.php';
+  const MESSAGE_QUEUE_URL = 'http://api.dinerosegurohf:8080/mqueue/ws/mQueueProcessor.php';
 
   /**
    * path where all system logs will be stored
@@ -171,6 +171,12 @@ class CoreConfig
    * Encoding currently used in the system. [UTF-8 | ISO-8859-1]
    */
   const SYS_ENCODING = 'UTF-8';
+
+  /**
+   *
+   */
+  const CRON_JOBS_ACTIVE = false;
+  const CRON_JOB_SERVICES = 'http://api.dinerosegurohf:8080/api/services.php';
 
   /**
    * P2P controller to check stickiness

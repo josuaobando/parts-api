@@ -118,6 +118,22 @@ class TblStickiness extends Db
     return $this->executeUpdate($sql, $params);
   }
 
+  /**
+   * get stickiness pending
+   *
+   * @return array
+   */
+  public function getPending()
+  {
+    $sql = "CALL spStickiness_Pending()";
+
+    $params = array();
+    $rows = array();
+    $this->executeQuery($sql, $rows, $params);
+
+    return $rows;
+  }
+
 }
 
 ?>
