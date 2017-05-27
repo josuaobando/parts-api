@@ -28,6 +28,8 @@ foreach($stickinessPending as $transaction)
 
     $stickiness->restore();
     $stickiness->verify();
+
+    break;
   }
   catch(Exception $ex)
   {
@@ -35,5 +37,5 @@ foreach($stickinessPending as $transaction)
   }
 }
 
-echo "Services has finish";
+Log::custom('Job', 'Services has finish');
 ?>

@@ -8,8 +8,11 @@ if(CoreConfig::CRON_JOBS_ACTIVE)
   $connector = new Connector();
   $response = $connector->loadContent(CoreConfig::CRON_JOB_SERVICES);
 
-  $dataString = Util::toString($response);
-  Log::custom('Job', $dataString);
+  Log::custom('Job', 'Jobs has finish');
+}
+else
+{
+  Log::custom('Job', 'Jobs are turned off!');
 }
 
 ?>
