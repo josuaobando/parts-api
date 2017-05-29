@@ -70,6 +70,41 @@ class TblUtil extends Db
 	
 		return $row;
 	}
+
+  /**
+   * get the list of countries
+   *
+   * @return array
+   */
+  public function getCountries()
+  {
+    $sql = "CALL countries()";
+
+    $rows = array();
+    $this->executeQuery($sql, $rows);
+
+    return $rows;
+  }
+
+  /**
+   * get the list of states for a specific country
+   *
+   * @param string $countryCode
+   *
+   * @return array
+   */
+  public function getStates($countryCode)
+  {
+    $sql = "CALL states('{countryCode}')";
+
+    $params = array();
+    $params['countryCode'] = $countryCode;
+
+    $rows = array();
+    $this->executeQuery($sql, $rows, $params);
+
+    return $rows;
+  }
 	
 }
 ?>

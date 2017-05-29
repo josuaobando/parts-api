@@ -32,7 +32,15 @@ class WSProcessor
 	 * @var string
 	 */
 	const REQUESTED_FORMAT = 'format';
-	
+
+  /**
+   * parameter's identifier for the needed encoding of the response
+   * [ ISO-8859-1 | UTF-8 ]
+   *
+   * @var string
+   */
+  const REQUESTED_ENCODING = 'encoding';
+
 	/**
 	 * parameter to request add the callback function for json response format
 	 * 
@@ -126,9 +134,13 @@ class WSProcessor
 		$uniqueId = Encrypt::genKey();
 		try
 		{
-			//create WSRequest object using the parameters send by the client
-			$wsRequest = new WSRequest($_REQUEST);
-			
+      //check if the request was sent using json
+      $wsRequest = new WSRequest(json_decode(file_get_contents("php://input"), true));
+      if ($wsRequest->isEmpty()){
+        //if empty try with the regular request
+        $wsRequest->overwriteRequest($_REQUEST);
+      }
+
 			//check if the access is valid
 			$credentials = WSAccess::getCredentials($wsRequest);
 			
@@ -148,24 +160,22 @@ class WSProcessor
 			$wsResponse = new WSResponseError($ex->getMessage());
 		}
 		
-		$format = $wsRequest->getParam(self::REQUESTED_FORMAT, WSResponse::DEFAULT_FORMAT);
-		
-		//set the header of the response, currently only for xml
-		if ($format == WSResponse::FORMAT_XML)
-		{
-			Util::putResponseHeaders($format);
-		}
-		
-		$wsResponse->setJSONCallback($wsRequest->getParam(self::JSON_CALLBACK, null));
-		
-		//send the object to the output converting it to string
-		$response = $wsResponse->toString($format);
-		
-		//calculate the response time and log the request using the message queue
-		$endTime = Util::calculateProcessTime($startTime);
-		self::logResponse($uniqueId, $response, $endTime);
-		
-		echo $response;
+    $format = $wsRequest->getParam(self::REQUESTED_FORMAT, WSResponse::DEFAULT_FORMAT);
+    $encoding = $wsRequest->getParam(self::REQUESTED_ENCODING, CoreConfig::SYS_ENCODING);
+
+    //set the header of the response
+    Util::putResponseHeaders($format, $encoding);
+
+    $wsResponse->setJSONCallback($wsRequest->getParam(self::JSON_CALLBACK, null));
+
+    //send the object to the output converting it to string
+    $response = $wsResponse->toString($format);
+
+    //calculate the response time and log the request using the message queue
+    $endTime = Util::calculateProcessTime($startTime);
+    self::logResponse($uniqueId, $response, $endTime);
+
+    echo $response;
 	}
 	
 }

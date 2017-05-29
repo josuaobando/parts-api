@@ -11,10 +11,10 @@ class Util
   const REGEX_ALPHANIMERIC = '^[-a-zA-Z0-9ñÑáóéíóúÁÉÍÓÚ ,.-]+$';
   const FORMAT_DATE_DISPLAY = 'd F H:i:s';
 
-	/**
-	 * check if the environment is development
-	 */
-	public static function isDEV()
+  /**
+   * check if the environment is development
+   */
+  public static function isDEV()
   {
     $isDev = CoreConfig::DEV;
 

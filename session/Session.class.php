@@ -8,6 +8,7 @@ class Session
 
   const SID_ACCOUNT = 'account';
   const SID_COUNTRIES = 'countries';
+  const SID_AGENCIES = 'agencies';
 
   /**
    * get sid generated
@@ -124,6 +125,28 @@ class Session
     }
 
     return $countries;
+  }
+
+  /**
+   * get agencies
+   *
+   * @return array
+   */
+  public static function getAgencies()
+  {
+    $agenciesSession = self::getSessionObject(self::SID_AGENCIES);
+    if(!$agenciesSession)
+    {
+      $tblSystem = TblSystem::getInstance();
+      $agencies = $tblSystem->getAgencies();
+      self::storeSessionObject(self::SID_AGENCIES, $agencies, true);
+    }
+    else
+    {
+      $agencies = $agenciesSession;
+    }
+
+    return $agencies;
   }
 
 }

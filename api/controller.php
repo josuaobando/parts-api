@@ -13,8 +13,12 @@ require_once('system/Startup.class.php');
  */
 function startController()
 {
-  //create the request object
-  $wsRequest = new WSRequest($_REQUEST);
+  //check if the request was sent using json
+  $wsRequest = new WSRequest(json_decode(file_get_contents("php://input"), true));
+  if ($wsRequest->isEmpty()){
+    //if empty try with the regular request
+    $wsRequest->overwriteRequest($_REQUEST);
+  }
 
   //prefix in order to avoid a conflict with the function names in the webservices
   $prefix = "ctrl_";
@@ -50,14 +54,11 @@ function startController()
     }
   }
 
-  $format = $wsRequest->getParam(WSProcessor::REQUESTED_FORMAT, WSResponse::FORMAT_JSON);
-  $encoding = $wsRequest->getParam('encoding', 'UTF-8');
-
   //set the header of the response
-  Util::putResponseHeaders($format, $encoding);
+  Util::putResponseHeaders(WSResponse::FORMAT_JSON, 'UTF-8');
 
   //send the object to the output converting it to string
-  echo $wsResponse->toString($format);
+  echo $wsResponse->toString(WSResponse::FORMAT_JSON);
 }
 
 /**
@@ -72,6 +73,14 @@ function ctrl_login()
  * get countries
  */
 function ctrl_getCountries()
+{
+  require_once('api/client.php');
+}
+
+/**
+ * get agencies
+ */
+function ctrl_getAgencies()
 {
   require_once('api/client.php');
 }

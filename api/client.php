@@ -58,6 +58,29 @@ function getCountries($wsRequest)
   return $wsResponse;
 }
 
+/**
+ * get agencies
+ *
+ * @param WSRequest $wsRequest
+ *
+ * @return WSResponse
+ */
+function getAgencies($wsRequest)
+{
+  try
+  {
+    $countries = Session::getCountries();
+    $wsResponse = new WSResponseOk();
+    $wsResponse->addElement('agencies', $countries);
+  }
+  catch(InvalidParameterException $ex)
+  {
+    $wsResponse = new WSResponseError($ex->getMessage());
+  }
+
+  return $wsResponse;
+}
+
 WSProcessor::process();
 
 ?>
