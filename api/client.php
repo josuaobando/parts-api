@@ -69,9 +69,9 @@ function getAgencies($wsRequest)
 {
   try
   {
-    $countries = Session::getCountries();
+    $agencies = Session::getAgencies();
     $wsResponse = new WSResponseOk();
-    $wsResponse->addElement('agencies', $countries);
+    $wsResponse->addElement('agencies', $agencies);
   }
   catch(InvalidParameterException $ex)
   {
