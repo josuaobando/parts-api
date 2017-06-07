@@ -8,15 +8,17 @@
 
 require_once('system/Startup.class.php');
 
-$tblStickiness = TblStickiness::getInstance();
-$stickinessPending = $tblStickiness->getPending();
+Log::custom('Job', 'Service has started');
 
-foreach($stickinessPending as $transaction)
+$tblStickiness = TblStickiness::getInstance();
+
+$stickinessPending = $tblStickiness->getPending();
+foreach($stickinessPending as $pending)
 {
   try
   {
-    $customerId = $transaction['Customer_Id'];
-    $personId = $transaction['Person_Id'];
+    $customerId = $pending['Customer_Id'];
+    $personId = $pending['Person_Id'];
 
     $stickiness = new Stickiness();
     $stickiness->setCustomerId($customerId);
@@ -29,7 +31,8 @@ foreach($stickinessPending as $transaction)
     $stickiness->restore();
     $stickiness->verify();
 
-    Log::custom('Job', 'Check Pending Transaction', $transaction);
+    $logData = Util::toString($pending);
+    Log::custom('Job', 'Check Pending Transaction', $logData);
   }
   catch(Exception $ex)
   {
@@ -38,12 +41,12 @@ foreach($stickinessPending as $transaction)
 }
 
 $stickinessApproved = $tblStickiness->getApproved();
-foreach($stickinessApproved as $transaction)
+foreach($stickinessApproved as $approved)
 {
   try
   {
-    $customerId = $transaction['Customer_Id'];
-    $personId = $transaction['Person_Id'];
+    $customerId = $approved['Customer_Id'];
+    $personId = $approved['Person_Id'];
 
     $stickiness = new Stickiness();
     $stickiness->setCustomerId($customerId);
@@ -56,7 +59,8 @@ foreach($stickinessApproved as $transaction)
     $stickiness->restore();
     $stickiness->verify();
 
-    Log::custom('Job', 'Check Approved Transaction', $transaction);
+    $logData = Util::toString($approved);
+    Log::custom('Job', 'Check Approved Transaction', $logData);
   }
   catch(Exception $ex)
   {
@@ -64,5 +68,5 @@ foreach($stickinessApproved as $transaction)
   }
 }
 
-Log::custom('Job', 'Services has finish');
+Log::custom('Job', 'Service has finish');
 ?>
