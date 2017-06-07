@@ -106,7 +106,7 @@ class Manager
 
     //create person object
     $person = new Person($personId);
-    if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA && !$stickiness->getStickinessId())
+    if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA)
     {
       $stickiness->setCustomerId($customer->getCustomerId());
       $stickiness->setCustomer($customer->getCustomer());
