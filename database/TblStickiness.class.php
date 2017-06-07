@@ -134,6 +134,22 @@ class TblStickiness extends Db
     return $rows;
   }
 
+  /**
+   * get stickiness approved
+   *
+   * @return array
+   */
+  public function getApproved()
+  {
+    $sql = "CALL spStickiness_Approved()";
+
+    $params = array();
+    $rows = array();
+    $this->executeQuery($sql, $rows, $params);
+
+    return $rows;
+  }
+
 }
 
 ?>

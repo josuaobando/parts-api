@@ -28,6 +28,35 @@ foreach($stickinessPending as $transaction)
 
     $stickiness->restore();
     $stickiness->verify();
+
+    Log::custom('Job', 'Check Pending Transaction', $transaction);
+  }
+  catch(Exception $ex)
+  {
+    ExceptionManager::handleException($ex);
+  }
+}
+
+$stickinessApproved = $tblStickiness->getApproved();
+foreach($stickinessApproved as $transaction)
+{
+  try
+  {
+    $customerId = $transaction['Customer_Id'];
+    $personId = $transaction['Person_Id'];
+
+    $stickiness = new Stickiness();
+    $stickiness->setCustomerId($customerId);
+
+    $person = new Person($personId);
+    $stickiness->setPersonId($person->getPersonId());
+    $stickiness->setPersonalId($person->getPersonalId());
+    $stickiness->setPerson($person->getName());
+
+    $stickiness->restore();
+    $stickiness->verify();
+
+    Log::custom('Job', 'Check Approved Transaction', $transaction);
   }
   catch(Exception $ex)
   {
