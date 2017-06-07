@@ -92,12 +92,12 @@ class WSResponse
    */
   private function getXMLResponse()
   {
-    $xml = new XmlElement('wsResponse');
+    $xml = new XmlElement('result');
 
-    $xmlState = new XmlElement("state");
+    $xmlState = new XmlElement("code");
     $xmlState->setValue($this->state);
 
-    $xmlSystemMessage = new XmlElement("systemMessage");
+    $xmlSystemMessage = new XmlElement("message");
     $xmlSystemMessage->setValue($this->systemMessage);
 
     $xml->addElement($xmlState);
@@ -105,9 +105,9 @@ class WSResponse
 
     if(count($this->elements) > 0)
     {
-      $xmlElements = new XmlElement('response');
-      $xmlElements->loadArray($this->elements);
-      $xml->addElement($xmlElements);
+      //$xmlElements = new XmlElement('response');
+      $xml->loadArray($this->elements);
+      //$xml->addElement($xmlElements);
     }
 
     return $xml->__toString();
@@ -121,8 +121,8 @@ class WSResponse
   private function getJSONResponse()
   {
     $data = array();
-    $data['state'] = $this->state;
-    $data['systemMessage'] = $this->systemMessage;
+    $data['code'] = $this->state;
+    $data['message'] = $this->systemMessage;
 
     if(count($this->elements) > 0)
     {
