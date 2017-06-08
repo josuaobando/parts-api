@@ -113,7 +113,7 @@ class Manager
       $stickiness->setPersonId($person->getPersonId());
       $stickiness->setPersonalId($person->getPersonalId());
       $stickiness->setPerson($person->getName());
-      $stickiness->verify();
+      $stickiness->register();
     }
     $person->block();
 
@@ -124,6 +124,16 @@ class Manager
     $transaction->create();
     if($transaction->getTransactionId())
     {
+      /*
+      //add stickiness transaction
+      if($stickiness->getStickinessId()){
+        $stickinessTransaction = new StickinessTransaction();
+        $stickinessTransaction->setStickinessId($stickiness->getStickinessId());
+        $stickinessTransaction->setVerification($stickiness->getVerification());
+        $stickinessTransaction->setVerificationId($stickiness->getVerificationId());
+        $stickinessTransaction->setTransactionId($transaction->getTransactionId());
+      }
+      */
       $wsResponse = new WSResponseOk();
       $wsResponse->addElement('transaction', $transaction);
       if($transactionType == Transaction::TYPE_RECEIVER)
@@ -273,7 +283,21 @@ class Manager
       //if not exist, create it
       if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId())
       {
-        $stickiness->verify();
+        $stickiness->complete();
+        /*
+        if($stickiness->getStickinessId()){
+          //restore stickiness transaction
+          $stickinessTransaction = new StickinessTransaction();
+          $stickinessTransaction->setTransactionId($transaction->getTransactionId());
+          $stickinessTransaction->restore();
+          if($stickinessTransaction->getStickinessTransactionId()){
+            //update stickiness transaction
+            $stickinessTransaction->setVerification($stickiness->getVerification());
+            $stickinessTransaction->setVerificationId($stickiness->getVerificationId());
+            $stickinessTransaction->update();
+          }
+        }
+        */
       }
       elseif($transaction->getAgencyTypeId() == Transaction::AGENCY_RIA && !$stickiness->getStickinessId())
       {

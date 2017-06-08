@@ -166,6 +166,22 @@ class Stickiness
   }
 
   /**
+   * @return int
+   */
+  public function getVerificationId()
+  {
+    return $this->verificationId;
+  }
+
+  /**
+   * @return string
+   */
+  public function getVerification()
+  {
+    return $this->verification;
+  }
+
+  /**
    * @param int $personalId
    */
   public function setPersonalId($personalId)
@@ -205,7 +221,7 @@ class Stickiness
   {
     if(!$this->stickinessId)
     {
-      $this->tblStickiness->create($this->customerId, $this->personId, $verificationId, $verification);
+      $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId, $verificationId, $verification);
     }
     else
     {
@@ -245,24 +261,6 @@ class Stickiness
   //---------------------------------------------------
   //--External connection to validate Person 2 Person--
   //---------------------------------------------------
-
-  /**
-   * verification with provider
-   */
-  public function verify()
-  {
-    if(CoreConfig::WS_STICKINESS_ACTIVE)
-    {
-      if($this->verification == self::STATUS_VERIFICATION_PENDING)
-      {
-        $this->complete();
-      }
-      else
-      {
-        $this->register();
-      }
-    }
-  }
 
   /**
    * authentication params
@@ -315,9 +313,9 @@ class Stickiness
   /**
    * The web service checks if the sender is still available for new receiver's, is already linked to a receiver or is linked to a different merchant or company.
    */
-  private function register()
+  public function register()
   {
-    if($this->checkConnection())
+    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection())
     {
       $result = null;
       try
@@ -373,9 +371,9 @@ class Stickiness
   /**
    * The web service confirms or completes the transaction, in this service is where the sender gets linked to the receiver.
    */
-  private function complete()
+  public function complete()
   {
-    if($this->checkConnection())
+    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection())
     {
       $result = null;
       try

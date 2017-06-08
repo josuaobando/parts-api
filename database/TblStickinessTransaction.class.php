@@ -59,17 +59,19 @@ class TblStickinessTransaction extends Db
    * update stickiness transaction
    *
    * @param $stickinessTransactionId
+   * @param $verificationId
    * @param $verification
    *
    * @return int
    */
-	public function update($stickinessTransactionId, $verification)
+	public function update($stickinessTransactionId, $verificationId, $verification)
 	{
-		$sql = "CALL spStickinessTransaction_Update('{stickinessTransactionId}', '{verificationId}')";
+		$sql = "CALL spStickinessTransaction_Update('{stickinessTransactionId}', '{verificationId}', '{verification}')";
 	
 		$params = array();
 		$params['stickinessTransactionId'] = $stickinessTransactionId;
-		$params['verificationId'] = $verification;
+    $params['verificationId'] = $verificationId;
+		$params['verification'] = $verification;
 
 		return $this->executeUpdate($sql, $params);
 	}

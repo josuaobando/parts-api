@@ -29,7 +29,7 @@ foreach($stickinessPending as $pending)
     $stickiness->setPerson($person->getName());
 
     $stickiness->restore();
-    $stickiness->verify();
+    $stickiness->register();
 
     $logData = Util::toString($pending);
     Log::custom('Job', 'Check Pending Transaction', $logData);
@@ -57,7 +57,7 @@ foreach($stickinessApproved as $approved)
     $stickiness->setPerson($person->getName());
 
     $stickiness->restore();
-    $stickiness->verify();
+    $stickiness->complete();
 
     $logData = Util::toString($approved);
     Log::custom('Job', 'Check Approved Transaction', $logData);
