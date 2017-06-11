@@ -77,6 +77,10 @@ class Stickiness
    * @var int
    */
   private $personalId;
+  /**
+   * @var string
+   */
+  private $controlNumber;
 
   /**
    * TblStickiness reference
@@ -203,6 +207,22 @@ class Stickiness
   public function setPerson($person)
   {
     $this->person = $person;
+  }
+
+  /**
+   * @return string
+   */
+  public function getControlNumber()
+  {
+    return $this->controlNumber;
+  }
+
+  /**
+   * @param string $controlNumber
+   */
+  public function setControlNumber($controlNumber)
+  {
+    $this->controlNumber = $controlNumber;
   }
 
   /**
@@ -383,6 +403,7 @@ class Stickiness
         $params['verificationId'] = $this->verificationId;
         $params['receiver'] = $this->person;
         $params['receiverId'] = $this->personalId;
+        $params['controlNumber'] = $this->controlNumber;
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());

@@ -283,6 +283,7 @@ class Manager
       //if not exist, create it
       if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId())
       {
+        $stickiness->setControlNumber($controlNumber);
         $stickiness->complete();
         /*
         if($stickiness->getStickinessId()){
