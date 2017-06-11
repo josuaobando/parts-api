@@ -234,18 +234,14 @@ class Stickiness
   }
 
   /**
-   * @param $verificationId
-   * @param $verification
+   * add api-controller information
    */
-  private function createProvider($verificationId, $verification)
+  private function createProvider()
   {
-    if(!$this->stickinessId)
-    {
-      $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId, $verificationId, $verification);
-    }
-    else
-    {
-      $this->tblStickiness->update($this->stickinessId, $verificationId, $verification);
+    if(!$this->stickinessId){
+      $this->stickinessId = $this->tblStickiness->create($this->customerId, $this->personId, $this->verificationId, $this->verification);
+    }else{
+      $this->tblStickiness->update($this->stickinessId, $this->verificationId, $this->verification);
     }
   }
 
@@ -254,11 +250,9 @@ class Stickiness
    */
   public function restore()
   {
-    if($this->customerId)
-    {
+    if($this->customerId){
       $stickinessData = $this->tblStickiness->getByCustomerId($this->customerId);
-      if($stickinessData)
-      {
+      if($stickinessData){
         $this->stickinessId = $stickinessData['Stickiness_Id'];
         $this->verificationId = $stickinessData['Verification_Id'];
         $this->verification = $stickinessData['Verification'];
@@ -267,8 +261,7 @@ class Stickiness
         $this->customerId = $stickinessData['Customer_Id'];
         $this->customer = $stickinessData['Customer'];
 
-        if(!$this->personId)
-        {
+        if(!$this->personId){
           $this->personId = $stickinessData['Person_Id'];
           $this->person = $stickinessData['Person'];
           $this->personalId = $stickinessData['PersonalId'];
@@ -307,23 +300,19 @@ class Stickiness
    */
   private function checkConnection()
   {
-    if(!CoreConfig::WS_STICKINESS_CHECK_CONNECTION)
-    {
+    if(!CoreConfig::WS_STICKINESS_CHECK_CONNECTION){
       return true;
     }
 
-    try
-    {
+    try{
       $params = $this->authParams();
 
       $wsConnector = new WS();
       $wsConnector->setReader(new Reader_Json());
-      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'account/', $params);
+      $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL . 'account/', $params);
 
       return ($result && $result->code == 1);
-    }
-    catch(WSException $ex)
-    {
+    }catch(WSException $ex){
       ExceptionManager::handleException($ex);
     }
 
@@ -335,11 +324,9 @@ class Stickiness
    */
   public function register()
   {
-    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection())
-    {
+    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection()){
       $result = null;
-      try
-      {
+      try{
         $params = $this->authParams();
         //required param
         $params['sender'] = $this->customer;
@@ -348,31 +335,27 @@ class Stickiness
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'check/', $params);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL . 'check/', $params);
 
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
-      }
-      catch(Exception $ex)
-      {
+      }catch(Exception $ex){
         ExceptionManager::handleException($ex);
       }
 
-      if($result)
-      {
-        switch($result->code)
-        {
+      if($result){
+        switch($result->code){
           case self::STATUS_CODE_SUCCESS:
           case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
-            if($result->response && $result->response->verification)
-            {
+            if($result->response && $result->response->verification){
               $verification = $result->response->verification;
-              if($verification->status == self::STATUS_VERIFICATION_PENDING)
-              {
-                $this->createProvider($verification->id, $verification->status);
-              }
-              else
-              {
+              if($verification->status == self::STATUS_VERIFICATION_PENDING){
+
+                $this->verificationId = $verification->id;
+                $this->verification = $verification->status;
+                $this->createProvider();
+
+              }else{
                 throw new InvalidStateException("The Customer is linked to another Person.");
               }
             }
@@ -385,6 +368,9 @@ class Stickiness
         }
       }
 
+    }else{
+      //create stickiness
+      $this->create();
     }
   }
 
@@ -393,11 +379,9 @@ class Stickiness
    */
   public function complete()
   {
-    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection())
-    {
+    if(CoreConfig::WS_STICKINESS_ACTIVE && $this->checkConnection()){
       $result = null;
-      try
-      {
+      try{
         $params = $this->authParams();
         //required param
         $params['verificationId'] = $this->verificationId;
@@ -407,31 +391,27 @@ class Stickiness
 
         $wsConnector = new WS();
         $wsConnector->setReader(new Reader_Json());
-        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL.'confirm/', $params);
+        $result = $wsConnector->execPost(CoreConfig::WS_STICKINESS_URL . 'confirm/', $params);
 
         $this->tblStickiness->addProviderMessage($this->stickinessId, $wsConnector->getLastRequest(), $result);
-      }
-      catch(Exception $ex)
-      {
+      }catch(Exception $ex){
         ExceptionManager::handleException($ex);
       }
 
-      if($result)
-      {
-        switch($result->code)
-        {
+      if($result){
+        switch($result->code){
           case self::STATUS_CODE_SUCCESS:
           case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
-            if($result->response && $result->response->verification)
-            {
+            if($result->response && $result->response->verification){
               $verification = $result->response->verification;
-              if($verification->status == self::STATUS_VERIFICATION_APPROVED)
-              {
-                $this->createProvider($verification->id, $verification->status);
-              }
-              else
-              {
+              if($verification->status == self::STATUS_VERIFICATION_APPROVED){
+
+                $this->verificationId = $verification->id;
+                $this->verification = $verification->status;
+                $this->createProvider();
+
+              }else{
                 throw new InvalidStateException("The Customer is linked to another Person.");
               }
             }

@@ -46,8 +46,7 @@ class Manager
   private function getPersonAvailable($amount, $agencyTypeId, $agencyId)
   {
     $availableList = $this->tblManager->getPersonsAvailable($this->account->getAccountId(), $amount, $agencyTypeId, $agencyId);
-    if(!$availableList || !is_array($availableList) || count($availableList) == 0)
-    {
+    if(!$availableList || !is_array($availableList) || count($availableList) == 0){
       throw new InvalidStateException("there are not names available");
     }
     $selectedId = array_rand($availableList, 1);
@@ -97,8 +96,7 @@ class Manager
     $stickiness->restore();
     //get person id from stickiness
     $personId = $stickiness->getPersonId();
-    if(!$personId)
-    {
+    if(!$personId){
       //select and block the person for following transactions
       $personSelected = $this->getPersonAvailable($amount, $customer->getAgencyTypeId(), $customer->getAgencyId());
       $personId = $personSelected['Person_Id'];
@@ -106,8 +104,7 @@ class Manager
 
     //create person object
     $person = new Person($personId);
-    if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA)
-    {
+    if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA){
       $stickiness->setCustomerId($customer->getCustomerId());
       $stickiness->setCustomer($customer->getCustomer());
       $stickiness->setPersonId($person->getPersonId());
@@ -122,9 +119,7 @@ class Manager
 
     //create transaction after the validation of the data
     $transaction->create();
-    if($transaction->getTransactionId())
-    {
-      /*
+    if($transaction->getTransactionId()){
       //add stickiness transaction
       if($stickiness->getStickinessId()){
         $stickinessTransaction = new StickinessTransaction();
@@ -132,23 +127,19 @@ class Manager
         $stickinessTransaction->setVerification($stickiness->getVerification());
         $stickinessTransaction->setVerificationId($stickiness->getVerificationId());
         $stickinessTransaction->setTransactionId($transaction->getTransactionId());
+        $stickinessTransaction->add();
       }
-      */
+
       $wsResponse = new WSResponseOk();
       $wsResponse->addElement('transaction', $transaction);
-      if($transactionType == Transaction::TYPE_RECEIVER)
-      {
+      if($transactionType == Transaction::TYPE_RECEIVER){
         $wsResponse->addElement('sender', $customer);
         $wsResponse->addElement('receiver', $person);
-      }
-      else
-      {
+      }else{
         $wsResponse->addElement('sender', $person);
         $wsResponse->addElement('receiver', $customer);
       }
-    }
-    else
-    {
+    }else{
       throw new InvalidStateException("The Transaction not has been created. Please, try later!");
     }
 
@@ -199,9 +190,8 @@ class Manager
     //restore and load transaction information
     $transaction = new Transaction();
     $transaction->restore($transactionId);
-    if(!$transaction->getTransactionId())
-    {
-      throw new InvalidStateException("this transaction not exist or not can be loaded: ".$transactionId);
+    if(!$transaction->getTransactionId()){
+      throw new InvalidStateException("this transaction not exist or not can be loaded: " . $transactionId);
     }
 
     $wsRequest->putParam('type', $transaction->getAgencyTypeId());
@@ -210,9 +200,8 @@ class Manager
     //$customer = new Customer();
     //$customer->validateFromRequest($this->account, $wsRequest);
 
-    if($transaction->getTransactionStatusId() != Transaction::STATUS_REQUESTED && $transaction->getTransactionStatusId() != Transaction::STATUS_REJECTED)
-    {
-      throw new InvalidStateException("this transaction cannot be confirmed since the current status is: ".$transaction->getTransactionStatus());
+    if($transaction->getTransactionStatusId() != Transaction::STATUS_REQUESTED && $transaction->getTransactionStatusId() != Transaction::STATUS_REJECTED){
+      throw new InvalidStateException("this transaction cannot be confirmed since the current status is: " . $transaction->getTransactionStatus());
     }
 
     //set new values
@@ -250,12 +239,9 @@ class Manager
     $amount = $wsRequest->requireNumericAndPositive("amount");
     $fee = $wsRequest->getParam("fee");
 
-    if($transactionTypeId == Transaction::TYPE_SENDER && $statusId == Transaction::STATUS_REJECTED)
-    {
+    if($transactionTypeId == Transaction::TYPE_SENDER && $statusId == Transaction::STATUS_REJECTED){
       $controlNumber = $wsRequest->getParam("controlNumber", '');
-    }
-    else
-    {
+    }else{
       $controlNumber = $wsRequest->requireNumericAndPositive("controlNumber");
     }
 
@@ -275,17 +261,15 @@ class Manager
     //update transaction after the validation of the data
     $update = $transaction->update();
 
-    if($transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED)
-    {
+    if($transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED){
       $stickiness = new Stickiness();
       $stickiness->setCustomerId($transaction->getCustomerId());
       $stickiness->restore();
       //if not exist, create it
-      if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId())
-      {
+      if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId()){
         $stickiness->setControlNumber($controlNumber);
         $stickiness->complete();
-        /*
+
         if($stickiness->getStickinessId()){
           //restore stickiness transaction
           $stickinessTransaction = new StickinessTransaction();
@@ -298,10 +282,8 @@ class Manager
             $stickinessTransaction->update();
           }
         }
-        */
-      }
-      elseif($transaction->getAgencyTypeId() == Transaction::AGENCY_RIA && !$stickiness->getStickinessId())
-      {
+
+      }elseif($transaction->getAgencyTypeId() == Transaction::AGENCY_RIA && !$stickiness->getStickinessId()){
         $stickiness->setPersonId($transaction->getPersonId());
         $stickiness->create();
       }
@@ -323,8 +305,7 @@ class Manager
   {
     $transaction = new Transaction();
     $transaction->restore($transactionId);
-    if(!$transaction->getTransactionId())
-    {
+    if(!$transaction->getTransactionId()){
       throw new InvalidStateException("The transaction [$transactionId] has not been restored, please check!");
     }
 
@@ -347,8 +328,7 @@ class Manager
     $transaction->setReason('');
     $success = $transaction->update();
 
-    if(!$success)
-    {
+    if(!$success){
       throw new InvalidStateException("The transaction [$transactionId] has not been updated, please check!");
     }
 

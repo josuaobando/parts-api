@@ -20,8 +20,7 @@ class TblStickiness extends Db
    */
   public static function getInstance()
   {
-    if(is_null(self::$singleton))
-    {
+    if(is_null(self::$singleton)){
       self::$singleton = new TblStickiness();
     }
 

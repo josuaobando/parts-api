@@ -51,11 +51,9 @@ class StickinessTransaction
    */
   public function restore()
   {
-    if($this->transactionId)
-    {
+    if($this->transactionId){
       $stickinessTransactionData = $this->tblStickinessTransaction->get($this->transactionId);
-      if($stickinessTransactionData)
-      {
+      if($stickinessTransactionData){
         $this->stickinessTransactionId = $stickinessTransactionData['StickinessTransaction_Id'];
         $this->stickinessId = $stickinessTransactionData['Stickiness_Id'];
         $this->transactionId = $stickinessTransactionData['Transaction_Id'];
