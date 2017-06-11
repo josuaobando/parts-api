@@ -121,7 +121,7 @@ class Manager
     $transaction->create();
     if($transaction->getTransactionId()){
       //add stickiness transaction
-      if($stickiness->getStickinessId()){
+      if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId()){
         $stickinessTransaction = new StickinessTransaction();
         $stickinessTransaction->setStickinessId($stickiness->getStickinessId());
         $stickinessTransaction->setVerification($stickiness->getVerification());
