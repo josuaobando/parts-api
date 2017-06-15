@@ -343,25 +343,26 @@ class Stickiness
       }
 
       if($result){
-        switch($result->code){
+
+        if($result->response && $result->response->verification){
+          $verification = $result->response->verification;
+          $this->verificationId = $verification->id;
+          $this->verification = $verification->status;
+        }
+
+        $resultCode = $result->code;
+        switch($resultCode){
           case self::STATUS_CODE_SUCCESS:
           case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
-            if($result->response && $result->response->verification){
-              $verification = $result->response->verification;
-              if($verification->status == self::STATUS_VERIFICATION_PENDING){
-
-                $this->verificationId = $verification->id;
-                $this->verification = $verification->status;
-                $this->createProvider();
-
-              }else{
-                throw new InvalidStateException("The Customer is linked to another Person.");
-              }
+            if($this->verification == self::STATUS_VERIFICATION_PENDING){
+              $this->createProvider();
+            }else{
+              throw new InvalidStateException("The Customer is linked to another Person.");
             }
             break;
           case self::STATUS_CODE_LINKED_OTHER:
-            throw new InvalidStateException("The Customer is linked to another agency.");
+            throw new InvalidStateException("The Customer is linked to another Agency.");
             break;
           default:
             //do nothing
@@ -399,25 +400,26 @@ class Stickiness
       }
 
       if($result){
-        switch($result->code){
+
+        if($result->response && $result->response->verification){
+          $verification = $result->response->verification;
+          $this->verificationId = $verification->id;
+          $this->verification = $verification->status;
+        }
+
+        $resultCode = $result->code;
+        switch($resultCode){
           case self::STATUS_CODE_SUCCESS:
           case self::STATUS_CODE_LINKED:
           case self::STATUS_CODE_LINKED_PENDING:
-            if($result->response && $result->response->verification){
-              $verification = $result->response->verification;
-              if($verification->status == self::STATUS_VERIFICATION_APPROVED){
-
-                $this->verificationId = $verification->id;
-                $this->verification = $verification->status;
-                $this->createProvider();
-
-              }else{
-                throw new InvalidStateException("The Customer is linked to another Person.");
-              }
+            if($this->verification == self::STATUS_VERIFICATION_APPROVED){
+              $this->createProvider();
+            }else{
+              throw new InvalidStateException("The Customer is linked to another Person.");
             }
             break;
           case self::STATUS_CODE_LINKED_OTHER:
-            throw new InvalidStateException("The Customer is linked to another agency.");
+            throw new InvalidStateException("The Customer is linked to another Agency.");
             break;
           default:
             //do nothing
