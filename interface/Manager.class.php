@@ -104,14 +104,14 @@ class Manager
 
     //create person object
     $person = new Person($personId);
-    if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA){
-      $stickiness->setCustomerId($customer->getCustomerId());
-      $stickiness->setCustomer($customer->getCustomer());
-      $stickiness->setPersonId($person->getPersonId());
-      $stickiness->setPersonalId($person->getPersonalId());
-      $stickiness->setPerson($person->getName());
-      $stickiness->register();
-    }
+    //Check to API Controller and Register Stickiness
+    $stickiness->setCustomerId($customer->getCustomerId());
+    $stickiness->setCustomer($customer->getCustomer());
+    $stickiness->setPersonId($person->getPersonId());
+    $stickiness->setPersonalId($person->getPersonalId());
+    $stickiness->setPerson($person->getName());
+    $stickiness->register();
+    //block person
     $person->block();
 
     //sets personId
@@ -121,7 +121,7 @@ class Manager
     $transaction->create();
     if($transaction->getTransactionId()){
       //add stickiness transaction
-      if($customer->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId()){
+      if($stickiness->getStickinessId()){
         $stickinessTransaction = new StickinessTransaction();
         $stickinessTransaction->setStickinessId($stickiness->getStickinessId());
         $stickinessTransaction->setVerification($stickiness->getVerification());
@@ -260,13 +260,15 @@ class Manager
 
     //update transaction after the validation of the data
     $update = $transaction->update();
+    if($update && $transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED){
 
-    if($transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED){
       $stickiness = new Stickiness();
       $stickiness->setCustomerId($transaction->getCustomerId());
       $stickiness->restore();
-      //if not exist, create it
-      if($transaction->getAgencyTypeId() != Transaction::AGENCY_RIA && $stickiness->getStickinessId()){
+
+      if($stickiness->getStickinessId()){
+
+        //Completed to API Controller
         $stickiness->setControlNumber($controlNumber);
         $stickiness->complete();
 
@@ -283,9 +285,6 @@ class Manager
           }
         }
 
-      }elseif($transaction->getAgencyTypeId() == Transaction::AGENCY_RIA && !$stickiness->getStickinessId()){
-        $stickiness->setPersonId($transaction->getPersonId());
-        $stickiness->create();
       }
     }
 
