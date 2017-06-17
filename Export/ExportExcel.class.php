@@ -79,21 +79,10 @@ abstract class ExportExcel extends Export
 
 		return $phpExcelWrite;		
 	}		
-	
-	/**
-	 * set enclosure
-	 *
-	 * @param string $enclosure
-	 *
-	 */
-	public function setEnclosured($enclosure)
-	{
-		$this->enclosure = $enclosure;
-	}
-	
-	/**
-	 * @return the $enclosure
-	 */
+
+  /**
+   * @return string
+   */
 	public function getEnclosure()
 	{
 		return $this->enclosure;
