@@ -32,6 +32,11 @@ class StickinessTransaction
   private $verification;
 
   /**
+   * @var string
+   */
+  private $authCode;
+
+  /**
    * TblStickinessTransaction reference
    *
    * @var TblStickinessTransaction
@@ -63,14 +68,20 @@ class StickinessTransaction
     }
   }
 
+  /**
+   * add a new stickiness transaction
+   */
   public function add()
   {
     $this->stickinessTransactionId = $this->tblStickinessTransaction->insert($this->stickinessId, $this->transactionId, $this->verificationId, $this->verification);
   }
 
+  /**
+   * update a stickiness transaction
+   */
   public function update()
   {
-    $this->tblStickinessTransaction->update($this->stickinessTransactionId, $this->verificationId, $this->verification);
+    $this->tblStickinessTransaction->update($this->stickinessTransactionId, $this->verificationId, $this->verification, $this->authCode);
   }
 
   /**
@@ -151,6 +162,22 @@ class StickinessTransaction
   public function setVerification($verification)
   {
     $this->verification = $verification;
+  }
+
+  /**
+   * @return string
+   */
+  public function getAuthCode()
+  {
+    return $this->authCode;
+  }
+
+  /**
+   * @param string $authCode
+   */
+  public function setAuthCode($authCode)
+  {
+    $this->authCode = $authCode;
   }
 
 }

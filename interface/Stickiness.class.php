@@ -56,6 +56,10 @@ class Stickiness
   /**
    * @var string
    */
+  private $authCode;
+  /**
+   * @var string
+   */
   private $customer;
   /**
    * @var int
@@ -183,6 +187,14 @@ class Stickiness
   public function getVerification()
   {
     return $this->verification;
+  }
+
+  /**
+   * @return string
+   */
+  public function getAuthCode()
+  {
+    return $this->authCode;
   }
 
   /**
@@ -405,6 +417,7 @@ class Stickiness
           $verification = $result->response->verification;
           $this->verificationId = $verification->id;
           $this->verification = $verification->status;
+          $this->authCode = $verification->authCode;
         }
 
         $resultCode = $result->code;

@@ -281,6 +281,7 @@ class Manager
             //update stickiness transaction
             $stickinessTransaction->setVerification($stickiness->getVerification());
             $stickinessTransaction->setVerificationId($stickiness->getVerificationId());
+            $stickinessTransaction->setAuthCode($stickiness->getAuthCode());
             $stickinessTransaction->update();
           }
         }
