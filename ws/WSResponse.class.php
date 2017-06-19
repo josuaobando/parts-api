@@ -64,6 +64,20 @@ class WSResponse
   }
 
   /**
+   * remove a element to the response
+   *
+   * @param string $name
+   */
+  public function removeElement($name)
+  {
+    if (!$name || trim($name)=='')
+    {
+      return;
+    }
+    unset($this->elements[$name]);
+  }
+
+  /**
    * @param string $message
    */
   public function setMessage($message)
