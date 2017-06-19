@@ -258,29 +258,55 @@ class Stickiness
   }
 
   /**
-   *  restore or get stickiness data
+   * restore or get stickiness data
    */
   public function restore()
   {
-    if($this->customerId){
-      $stickinessData = $this->tblStickiness->getByCustomerId($this->customerId);
-      if($stickinessData){
-        $this->stickinessId = $stickinessData['Stickiness_Id'];
-        $this->verificationId = $stickinessData['Verification_Id'];
-        $this->verification = $stickinessData['Verification'];
-        $this->agencyP2P = $stickinessData['AgencyP2P'];
+    $stickinessData = $this->tblStickiness->get($this->stickinessId);
+    if($stickinessData){
+      $this->stickinessId = $stickinessData['Stickiness_Id'];
+      $this->verificationId = $stickinessData['Verification_Id'];
+      $this->verification = $stickinessData['Verification'];
+      $this->agencyP2P = $stickinessData['AgencyP2P'];
 
-        $this->customerId = $stickinessData['Customer_Id'];
-        $this->customer = $stickinessData['Customer'];
+      $this->customerId = $stickinessData['Customer_Id'];
+      $this->customer = $stickinessData['Customer'];
 
-        if(!$this->personId){
-          $this->personId = $stickinessData['Person_Id'];
-          $this->person = $stickinessData['Person'];
-          $this->personalId = $stickinessData['PersonalId'];
-        }
-
-      }
+      $this->personId = $stickinessData['Person_Id'];
+      $this->person = $stickinessData['Person'];
+      $this->personalId = $stickinessData['PersonalId'];
     }
+  }
+
+  /**
+   * restore or get stickiness data
+   *
+   * @param $customerId
+   */
+  public function restoreByCustomerId($customerId)
+  {
+    $this->customerId = $customerId;
+
+    $stickinessData = $this->tblStickiness->getByCustomerId($this->customerId);
+    if($stickinessData)
+    {
+      $this->stickinessId = $stickinessData['Stickiness_Id'];
+      $this->verificationId = $stickinessData['Verification_Id'];
+      $this->verification = $stickinessData['Verification'];
+      $this->agencyP2P = $stickinessData['AgencyP2P'];
+
+      $this->customerId = $stickinessData['Customer_Id'];
+      $this->customer = $stickinessData['Customer'];
+
+      if(!$this->personId)
+      {
+        $this->personId = $stickinessData['Person_Id'];
+        $this->person = $stickinessData['Person'];
+        $this->personalId = $stickinessData['PersonalId'];
+      }
+
+    }
+
   }
 
   //---------------------------------------------------

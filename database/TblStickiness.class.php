@@ -76,6 +76,27 @@ class TblStickiness extends Db
     return $this->executeUpdate($sql, $params);
   }
 
+
+  /**
+   * get stickiness by id
+   *
+   * @param int $stickinessId
+   *
+   * @return array
+   */
+  public function get($stickinessId)
+  {
+    $sql = "CALL spStickiness('{stickinessId}')";
+
+    $params = array();
+    $params['stickinessId'] = $stickinessId;
+
+    $row = array();
+    $this->executeSingleQuery($sql, $row, $params);
+
+    return $row;
+  }
+
   /**
    * get stickiness data by Customer Id
    *
