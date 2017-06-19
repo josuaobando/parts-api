@@ -20,15 +20,13 @@ foreach($stickinessPending as $pending)
     $customerId = $pending['Customer_Id'];
     $personId = $pending['Person_Id'];
 
-    $stickiness = new Stickiness();
-    $stickiness->setCustomerId($customerId);
-
     $person = new Person($personId);
+    $stickiness = new Stickiness();
     $stickiness->setPersonId($person->getPersonId());
     $stickiness->setPersonalId($person->getPersonalId());
     $stickiness->setPerson($person->getName());
 
-    $stickiness->restore();
+    $stickiness->restoreByCustomerId($customerId);
     $stickiness->register();
 
     $logData = Util::toString($pending);
@@ -47,17 +45,33 @@ foreach($stickinessApproved as $approved)
   {
     $customerId = $approved['Customer_Id'];
     $personId = $approved['Person_Id'];
-
-    $stickiness = new Stickiness();
-    $stickiness->setCustomerId($customerId);
+    $stickinessId = $approved['Stickiness_Id'];
+    $transactionId = $approved['Transaction_Id'];
+    $controlNumber = $approved['ControlNumber'];
 
     $person = new Person($personId);
+
+    $stickiness = new Stickiness();
+    $stickiness->setStickinessId($stickinessId);
     $stickiness->setPersonId($person->getPersonId());
     $stickiness->setPersonalId($person->getPersonalId());
     $stickiness->setPerson($person->getName());
+    $stickiness->setControlNumber($controlNumber);
 
     $stickiness->restore();
     $stickiness->complete();
+
+    //restore stickiness transaction
+    $stickinessTransaction = new StickinessTransaction();
+    $stickinessTransaction->setTransactionId($transactionId);
+    $stickinessTransaction->restore();
+    if($stickinessTransaction->getStickinessTransactionId()){
+      //update stickiness transaction
+      $stickinessTransaction->setVerification($stickiness->getVerification());
+      $stickinessTransaction->setVerificationId($stickiness->getVerificationId());
+      $stickinessTransaction->setAuthCode($stickiness->getAuthCode());
+      $stickinessTransaction->update();
+    }
 
     $logData = Util::toString($approved);
     Log::custom('Job', 'Check Approved Transaction', $logData);
@@ -66,6 +80,7 @@ foreach($stickinessApproved as $approved)
   {
     ExceptionManager::handleException($ex);
   }
+
 }
 
 Log::custom('Job', 'Service has finish');

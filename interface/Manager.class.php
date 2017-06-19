@@ -92,8 +92,7 @@ class Manager
 
     //check stickiness
     $stickiness = new Stickiness();
-    $stickiness->setCustomerId($customer->getCustomerId());
-    $stickiness->restore();
+    $stickiness->restoreByCustomerId($customer->getCustomerId());
     //get person id from stickiness
     $personId = $stickiness->getPersonId();
     if(!$personId){
@@ -263,9 +262,7 @@ class Manager
     if($update && $transaction->getTransactionStatusId() == Transaction::STATUS_APPROVED){
 
       $stickiness = new Stickiness();
-      $stickiness->setCustomerId($transaction->getCustomerId());
-      $stickiness->restore();
-
+      $stickiness->restoreByCustomerId($transaction->getCustomerId());
       if($stickiness->getStickinessId()){
 
         //Completed to API Controller
