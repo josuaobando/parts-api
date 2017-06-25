@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class GeneralException extends Exception 
+class GeneralException extends Exception
 {
 	
 	protected $description = "An exception has occurred";

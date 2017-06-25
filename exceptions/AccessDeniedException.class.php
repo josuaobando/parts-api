@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class AccessDeniedException extends GeneralException 
+class AccessDeniedException extends GeneralException
 {
 
   public function __construct($reason, $description)

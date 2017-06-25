@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Gustavo Granados
- * code is poetry
- */
+
 
 abstract class MQ_Type
 {

@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
 class Reader_Text extends Reader
 {
 	

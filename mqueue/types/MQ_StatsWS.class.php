@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
 class MQ_StatsWS extends MQ_Type
 {
 	

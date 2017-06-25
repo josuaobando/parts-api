@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * @author Josua
+ */
 class Stickiness
 {
 

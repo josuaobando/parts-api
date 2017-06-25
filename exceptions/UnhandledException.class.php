@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class UnhandledException extends GeneralException 
+class UnhandledException extends GeneralException
 {
 
   public function __construct($ex)

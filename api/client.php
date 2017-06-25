@@ -1,10 +1,5 @@
 <?php
 
-/**
- * Gustavo Granados
- * code is poetry
- */
-
 require_once('system/Startup.class.php');
 
 /**

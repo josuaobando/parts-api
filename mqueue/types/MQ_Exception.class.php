@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
 class MQ_Exception extends MQ_Type
 {
 	

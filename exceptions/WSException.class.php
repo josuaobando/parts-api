@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class WSException extends GeneralException 
+class WSException extends GeneralException
 {
 
   public function __construct($description) 

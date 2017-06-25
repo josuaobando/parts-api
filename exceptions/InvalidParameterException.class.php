@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class InvalidParameterException extends GeneralException 
+class InvalidParameterException extends GeneralException
 {
 
   public function __construct($key, $value, $function)

@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class InvalidStateException extends GeneralException 
+class InvalidStateException extends GeneralException
 {
 
 	public function __construct($description) 

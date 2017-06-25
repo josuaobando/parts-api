@@ -1,9 +1,6 @@
 <?php
 
-/**
- * Gustavo Granados
- * code is poetry
- */
+
 
 header("Connection: close");
 header("Content-Length: 0");

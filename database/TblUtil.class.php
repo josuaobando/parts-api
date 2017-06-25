@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class TblUtil extends Db 
+class TblUtil extends Db
 {
 	
 	/**

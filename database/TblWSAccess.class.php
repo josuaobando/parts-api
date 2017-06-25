@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class TblWSAccess extends Db 
+class TblWSAccess extends Db
 {
 	
 	/**

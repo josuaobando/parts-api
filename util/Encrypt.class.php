@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Gustavo Granados
- * code is poetry
+ * @author Josua
  */
-
-class Encrypt 
+class Encrypt
 {
 	
 	const METHOD_BASE64    = 1;
