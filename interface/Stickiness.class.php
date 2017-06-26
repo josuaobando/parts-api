@@ -408,6 +408,8 @@ class Stickiness
           default:
             //do nothing
         }
+      }else{
+        throw new InvalidStateException("The Customer cannot be verify.");
       }
 
     }else{
