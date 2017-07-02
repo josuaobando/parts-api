@@ -89,6 +89,19 @@ class Customer
    */
   private function validate($companyId, $accountId)
   {
+    /*
+    $similarList = $this->tblCustomer->getSimilar($companyId,$this->agencyTypeId, $this->firstName, $this->lastName);
+    if($similarList && COUNT($similarList) > 0){
+      $customerName = $this->getCustomer();
+      foreach($similarList as $similar){
+        $percent = 0;
+        similar_text($customerName, $similar, $percent);
+        if($percent >= 90){
+
+        }
+      }
+    }
+*/
     $customerData = $this->tblCustomer->validate($companyId, $accountId, $this->agencyTypeId, $this->firstName, $this->lastName, $this->countryId, $this->stateId, $this->phone);
     $this->customerId = $customerData['CustomerId'];
     $this->agencyId = $customerData['AgencyId'];

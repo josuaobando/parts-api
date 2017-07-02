@@ -81,6 +81,30 @@ class TblCustomer extends Db
 
 		return $output;
 	}
+
+  /**
+   * @param $companyId
+   * @param $agencyTypeId
+   * @param $firstName
+   * @param $lastName
+   *
+   * @return array
+   */
+  public function getSimilar($companyId, $agencyTypeId, $firstName, $lastName)
+  {
+    $sql = "CALL spCustomer_Similar('{companyId}', '{agencyTypeId}', '{firstName}', '{lastName}')";
+
+    $params = array();
+    $params['companyId'] = $companyId;
+    $params['agencyTypeId'] = $agencyTypeId;
+    $params['firstName'] = $firstName;
+    $params['lastName'] = $lastName;
+
+    $rows = array();
+    $this->executeQuery($sql, $rows, $params);
+
+    return $rows;
+  }
 	
 	/**
 	 * Validate if customer [firstname + lastname] is blocked by the Network
