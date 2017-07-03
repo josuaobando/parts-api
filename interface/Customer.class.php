@@ -98,16 +98,18 @@ class Customer
       $customerName = $this->getCustomer();
       foreach($similarList as $similar){
         $percent = 0;
-        similar_text($customerName, $similar, $percent);
+        $registerCustomerName = $similar['CustomerName'];
+        similar_text($customerName, $registerCustomerName, $percent);
         if($percent >= 90){
           $this->customerId = $similar['CustomerId'];
           $this->agencyId = $similar['AgencyId'];
+          Log::custom('Similar', "Request: $customerName Register: $registerCustomerName");
           break;
         }
       }
     }
 
-    if($this->customerId){
+    if(!$this->customerId){
       $customerData = $this->tblCustomer->validate($companyId, $accountId, $this->agencyTypeId, $this->firstName, $this->lastName, $this->countryId, $this->stateId, $this->phone);
       $this->customerId = $customerData['CustomerId'];
       $this->agencyId = $customerData['AgencyId'];
