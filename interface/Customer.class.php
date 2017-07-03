@@ -109,6 +109,7 @@ class Customer
       }
     }
 
+    //if not have register, check customer from request
     if(!$this->customerId){
       $customerData = $this->tblCustomer->validate($companyId, $accountId, $this->agencyTypeId, $this->firstName, $this->lastName, $this->countryId, $this->stateId, $this->phone);
       $this->customerId = $customerData['CustomerId'];
