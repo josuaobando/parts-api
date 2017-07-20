@@ -5,7 +5,6 @@
  */
 class Customer
 {
-
   private $customerId;
   private $agencyId;
   private $agencyTypeId;
@@ -77,6 +76,13 @@ class Customer
     $this->stateName = $stateData['Name'];
 
     $this->validate($account->getCompanyId(), $account->getAccountId());
+    if(!$this->customerId){
+      throw new InvalidStateException("invalid customer information");
+    }
+    if(!$this->agencyId){
+      throw new InvalidStateException("The agency is not available");
+    }
+
   }
 
   /**
@@ -89,50 +95,76 @@ class Customer
    */
   private function validate($companyId, $accountId)
   {
-    //customer data
-    $customerData = null;
+    //validate if exist a similar customer
+    $maxPercent = 0;
+    $customerNameSimilar = null;
+    $customerNameRequest = $this->getCustomer();
+
+    //validate if customer is blacklisted
+    $this->isBlacklisted();
 
     //validate if exist a similar customer
-    $similarList = $this->tblCustomer->getSimilar($companyId, $this->agencyTypeId, $this->firstName, $this->lastName);
-    if($similarList && COUNT($similarList) > 0){
-      $customerName = $this->getCustomer();
-      foreach($similarList as $similar){
-        $percent = 0;
-        $registerCustomerName = $similar['CustomerName'];
-        similar_text($customerName, $registerCustomerName, $percent);
-        if($percent >= 90){
-          $this->customerId = $similar['CustomerId'];
-          $this->agencyId = $similar['AgencyId'];
-          Log::custom('Similar', "Request: $customerName Register: $registerCustomerName");
-          break;
+    if(CoreConfig::CUSTOMER_SIMILAR_PERCENT_ACTIVE){
+      $similarList = $this->tblCustomer->getSimilar($companyId, $this->agencyTypeId, $this->firstName, $this->lastName);
+      if($similarList && COUNT($similarList) > 0){
+        foreach($similarList as $similar){
+          $registerCustomerName = $similar['CustomerName'];
+          similar_text($customerNameRequest, $registerCustomerName, $percent);
+          if($percent >= CoreConfig::CUSTOMER_SIMILAR_PERCENT && $percent > $maxPercent){
+
+            $this->customerId = $similar['CustomerId'];
+            $this->agencyId = $similar['AgencyId'];
+            $this->firstName = $similar['FirstName'];
+            $this->lastName = $similar['LastName'];
+
+            $maxPercent = $percent;
+            $customerNameSimilar = $registerCustomerName;
+          }
         }
       }
     }
 
-    //if not have register, check customer from request
-    if(!$this->customerId){
+
+    if($this->customerId){
+      //add log if customer has similar name
+      Log::custom('Similar', "Request: $customerNameRequest Register: $customerNameSimilar Percent: $maxPercent");
+      $this->isBlacklisted($customerNameSimilar);
+    }else{
+      //if not have register, check customer from request
       $customerData = $this->tblCustomer->validate($companyId, $accountId, $this->agencyTypeId, $this->firstName, $this->lastName, $this->countryId, $this->stateId, $this->phone);
       $this->customerId = $customerData['CustomerId'];
       $this->agencyId = $customerData['AgencyId'];
     }
 
-    if(!$this->customerId){
-      throw new InvalidStateException("invalid customer information");
-    }
-
-    if(!$this->agencyId){
-      throw new InvalidStateException("The agency is not available");
-    }
   }
 
   /**
    * Validate if customer [firstname + lastname] is blocked by the Network
    *
-   * @return int if is upper to zero, is blacklisted
+   * @param $customerName [optional]
+   *
+   * @throws InvalidStateException
    */
-  public function isBlacklisted()
+  public function isBlacklisted($customerName = null)
   {
-    return $this->tblCustomer->getIsBlacklisted($this->customerId);
+    $customerName = ($customerName) ? $customerName : $this->getCustomer();
+    $isBlacklisted = $this->tblCustomer->getIsBlacklisted($customerName, $this->agencyTypeId);
+    if($isBlacklisted > 0)
+    {
+      $agencyType = $this->agencyTypeId;
+      if($agencyType == Transaction::AGENCY_MONEY_GRAM)
+      {
+        throw new InvalidStateException("The Customer has been blacklisted by MG International. Suggest RIA option.");
+      }
+      elseif($agencyType == Transaction::AGENCY_WESTERN_UNION)
+      {
+        throw new InvalidStateException("The Customer has been blacklisted by WU International. Suggest RIA option.");
+      }
+      elseif($agencyType == Transaction::AGENCY_RIA)
+      {
+        throw new InvalidStateException("The Customer has been blacklisted by RIA International");
+      }
+    }
   }
 
   /**

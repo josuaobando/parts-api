@@ -109,16 +109,18 @@ class TblCustomer extends Db
 	/**
 	 * Validate if customer [firstname + lastname] is blocked by the Network
 	 *
-	 * @param int $customerId
+	 * @param int $customer
+   * @param $agencyTypeId
 	 *
 	 * @return int
 	 */
-	public function getIsBlacklisted($customerId)
+	public function getIsBlacklisted($customer, $agencyTypeId)
 	{
-	  $sql = "CALL customer_isBlacklisted('{customerId}', @isBlocked)";
+	  $sql = "CALL spCustomer_CheckBlocked('{customer}', '{agencyTypeId}', @isBlocked)";
 	
 	  $params = array();
-	  $params['customerId'] = $customerId;
+	  $params['customer'] = $customer;
+    $params['agencyTypeId'] = $agencyTypeId;
 	   
 	  $this->setOutputParams(array('isBlocked'));
 	  $this->executeUpdate($sql, $params);

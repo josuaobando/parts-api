@@ -80,25 +80,6 @@ class Limit
    */
   public function evaluate()
   {
-    // check blacklisted
-    $isBlacklisted = $this->customer->isBlacklisted();
-    if($isBlacklisted > 0)
-    {
-      $agencyType = $this->transaction->getAgencyTypeId();
-      if($agencyType == Transaction::AGENCY_MONEY_GRAM)
-      {
-        throw new InvalidStateException("The Customer has been blacklisted by MG International. Suggest RIA option.");
-      }
-      elseif($agencyType == Transaction::AGENCY_WESTERN_UNION)
-      {
-        throw new InvalidStateException("The Customer has been blacklisted by WU International. Suggest RIA option.");
-      }
-      elseif($agencyType == Transaction::AGENCY_RIA)
-      {
-        throw new InvalidStateException("The Customer has been blacklisted by RIA International");
-      }
-    }
-
     //load customer stats
     $transactionTypeId = $this->transaction->getTransactionTypeId();
     $this->stats = $this->customer->getStats($transactionTypeId);

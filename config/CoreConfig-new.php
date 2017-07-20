@@ -187,6 +187,11 @@ class CoreConfig
   const WS_STICKINESS_CREDENTIAL_PASSWORD = '123';
   const WS_STICKINESS_CREDENTIAL_KEY = ')&#$987';
 
+  /**
+   * validate similar customer
+   */
+  const CUSTOMER_SIMILAR_PERCENT_ACTIVE = true;
+  const CUSTOMER_SIMILAR_PERCENT = 90;
 }
 
 ?>
