@@ -54,8 +54,7 @@ class Connector
    */
   public function addHeader($header)
   {
-    if(in_array($header, $this->headers))
-    {
+    if(in_array($header, $this->headers)){
       return;
     }
     array_push($this->headers, $header);
@@ -131,10 +130,8 @@ class Connector
    */
   protected function setGetParams($fileUrl, $params)
   {
-    if(is_array($params) && count($params) > 0)
-    {
-      foreach($params as $key => $value)
-      {
+    if(is_array($params) && count($params) > 0){
+      foreach($params as $key => $value){
         $fileUrl = str_replace("{".$key."}", urlencode($value), $fileUrl);
       }
     }
@@ -163,30 +160,20 @@ class Connector
   {
     $data = '';
 
-    foreach($params as $key => $value)
-    {
-      if(is_array($value))
-      {
+    foreach($params as $key => $value){
+      if(is_array($value)){
         $isAssoc = Util::array_is_assoc($value);
         $arrayData = '';
         $numK = 0;
-        foreach($value as $k => $v)
-        {
-          if($isAssoc)
-          {
+        foreach($value as $k => $v){
+          if($isAssoc){
             $arrayData .= $key.urlencode("[$k]").'='.urlencode($v).'&';
-          }
-          else
-          {
-            if(is_array($v))
-            {
+          }else{
+            if(is_array($v)){
               $arrayData .= self::arrayToString($v, $key.urlencode("[$numK]")).'&';
-            }
-            else
-            {
+            }else{
               $keyFixed = $key;
-              if($prefix)
-              {
+              if($prefix){
                 $arrayData .= $prefix;
                 $keyFixed = urlencode("[$keyFixed]");
               }
@@ -197,23 +184,17 @@ class Connector
           }
         }
         $data .= $arrayData;
-      }
-      else
-      {
+      }else{
         $strValue = $value;
 
         $key = trim($key);
-        if($key == '')
-        {
+        if($key == ''){
           continue;
         }
 
-        if($prefix)
-        {
+        if($prefix){
           $data .= $prefix.urlencode("[").$key.urlencode("]").'='.urlencode($strValue).'&';
-        }
-        else
-        {
+        }else{
           $data .= $key.'='.urlencode($strValue).'&';
         }
       }
@@ -303,19 +284,14 @@ class Connector
     curl_setopt($resURL, CURLOPT_CONNECTTIMEOUT, $this->timeoutOnConnect); //connection timeout
     curl_setopt($resURL, CURLOPT_TIMEOUT, $this->timeout);                 //execution timeout
 
-    if($this->postParams)
-    {
-      if(is_array($this->postParams))
-      {
+    if($this->postParams){
+      if(is_array($this->postParams)){
         $strParams = $this->arrayToString($this->postParams);
-      }
-      else
-      {
+      }else{
         $strParams = $this->postParams;
       }
 
-      if($this->usePut)
-      {
+      if($this->usePut){
         curl_setopt($resURL, CURLOPT_CUSTOMREQUEST, 'PUT');
       }
 
@@ -323,8 +299,7 @@ class Connector
       curl_setopt($resURL, CURLOPT_POSTFIELDS, $strParams);
     }
 
-    if($this->username && $this->password)
-    {
+    if($this->username && $this->password){
       curl_setopt($resURL, CURLOPT_USERPWD, $this->username.":".$this->password);
     }
 
@@ -334,16 +309,12 @@ class Connector
     $this->lastErrorCode = curl_getinfo($resURL, CURLINFO_HTTP_CODE);
     $this->lastStats = curl_getinfo($resURL);
 
-    if(!$this->success())
-    {
+    if(!$this->success()){
       $this->lastError = curl_error($resURL);
-      if(!$this->lastError || !trim($this->lastError) || trim($this->lastError) == '')
-      {
+      if(!$this->lastError || !trim($this->lastError) || trim($this->lastError) == ''){
         $this->lastError = "Code: ".$this->lastErrorCode;
       }
-    }
-    else
-    {
+    }else{
       $this->lastError = 'Ok';
     }
 
@@ -380,8 +351,7 @@ class Connector
     $soapOptions['soap_version'] = SOAP_1_2;
     $soapOptions['compression'] = SOAP_COMPRESSION_ACCEPT | SOAP_COMPRESSION_GZIP;
 
-    if($this->username && $this->password)
-    {
+    if($this->username && $this->password){
       $soapOptions['login'] = $this->username;
       $soapOptions['password'] = $this->password;
     }
@@ -396,10 +366,8 @@ class Connector
      */
     $previousTimeout = ini_set('default_socket_timeout', $this->timeout);
 
-    if($options && is_array($options))
-    {
-      foreach($options as $opKey => $op)
-      {
+    if($options && is_array($options)){
+      foreach($options as $opKey => $op){
         $soapOptions[$opKey] = $op;
       }
     }
@@ -410,8 +378,7 @@ class Connector
     $noWrapParams = false;
 
     //overwrites
-    if($setup && is_array($setup))
-    {
+    if($setup && is_array($setup)){
       $namespace = $setup['namespace'] ? $setup['namespace'] : $namespace;
       $location = $setup['location'] ? $setup['location'] : $location;
       $noWrapParams = strtolower($setup['noWrapParams']) == '1' || strtolower($setup['noWrapParams']) == 'true' ? true : false;
@@ -421,32 +388,26 @@ class Connector
     $this->lastError = 'Ok';
     //TODO get the real http code after execute the calls
     $this->lastErrorCode = 200;
-    try
-    {
+    try{
       $connectStartTime = Util::getStartTime();
       $client = @new SoapClient($wsdl, $soapOptions);
       $this->lastStats['connect_time'] = Util::calculateProcessTime($connectStartTime);
 
-      if($headers && is_array($headers))
-      {
+      if($headers && is_array($headers)){
         $soapHeaders = array();
-        foreach($headers as $hKey => $h)
-        {
+        foreach($headers as $hKey => $h){
           $header = new SoapHeader($namespace, $hKey, $h);
           array_push($soapHeaders, $header);
         }
 
         $client->__setSoapHeaders($soapHeaders);
       }
-      if($location)
-      {
+      if($location){
         $client->__setLocation($location);
       }
       $execStartTime = Util::getStartTime();
       $this->lastContent = $client->__soapCall($method, $noWrapParams ? $params : array($params), $soapOptions);
-    }
-    catch(SoapFault $ex)
-    {
+    }catch(SoapFault $ex){
       $this->lastError = $ex->getMessage();
       $this->lastContent = null;
       $this->lastErrorCode = 0;
@@ -454,8 +415,7 @@ class Connector
     $this->lastStats['total_time'] = Util::calculateProcessTime($execStartTime);
 
     // If the timeout was overwritten before, restore it.
-    if($previousTimeout !== false && $previousTimeout != $this->timeout)
-    {
+    if($previousTimeout !== false && $previousTimeout != $this->timeout){
       ini_set('default_socket_timeout', $previousTimeout);
     }
 
@@ -492,8 +452,7 @@ class Connector
    */
   public function objToStr($obj)
   {
-    if(is_object($obj) && method_exists($obj, '__toString'))
-    {
+    if(is_object($obj) && method_exists($obj, '__toString')){
       return $obj->__toString();
     }
 
@@ -515,61 +474,41 @@ class Connector
     $desc = "Url: ".$this->lastUrl.$this->newline;
     $desc .= "Message: ".$this->lastError.$this->newline;
 
-    if($this->postParams)
-    {
+    if($this->postParams){
       $desc .= $this->newline."Post Parameters:$this->newline";
-      if(is_array($this->postParams) && count($this->postParams) > 0)
-      {
-        foreach($this->postParams as $key => $value)
-        {
-          if(is_array($value))
-          {
+      if(is_array($this->postParams) && count($this->postParams) > 0){
+        foreach($this->postParams as $key => $value){
+          if(is_array($value)){
             $paramValue = Util::arrayAssocToString($value);
-          }
-          else if(is_object($value))
-          {
+          }else if(is_object($value)){
             $paramValue = self::objToStr($value);
-          }
-          else
-          {
+          }else{
             $paramValue = $value;
           }
           $desc .= $key." : ".$paramValue.$this->newline;
         }
-      }
-      else if(is_object($this->postParams))
-      {
+      }else if(is_object($this->postParams)){
         $desc .= Util::objToStr($this->postParams).$this->newline;
-      }
-      else if(is_string($this->postParams))
-      {
+      }else if(is_string($this->postParams)){
         $desc .= $this->postParams.$this->newline;
       }
     }
 
-    if($this->getParams && is_array($this->getParams) && count($this->getParams) > 0)
-    {
+    if($this->getParams && is_array($this->getParams) && count($this->getParams) > 0){
       $desc .= $this->newline."Get Parameters:$this->newline";
-      foreach($this->getParams as $key => $value)
-      {
+      foreach($this->getParams as $key => $value){
         $desc .= $key." : ".$value.$this->newline;
       }
     }
 
-    if(!$this->success() && $this->lastContent)
-    {
+    if(!$this->success() && $this->lastContent){
       $desc .= $this->newline."Content:$this->newline";
 
-      if(is_object($this->lastContent))
-      {
+      if(is_object($this->lastContent)){
         $strContent = Util::objToStr($this->lastContent);
-      }
-      else if(is_array($this->lastContent))
-      {
+      }else if(is_array($this->lastContent)){
         $strContent = Util::arrayToString($this->lastContent);
-      }
-      else
-      {
+      }else{
         $strContent = $this->lastContent;
       }
 
@@ -594,14 +533,10 @@ class Connector
 
     $strParams = '';
 
-    if($this->postParams)
-    {
-      if(is_array($this->postParams))
-      {
+    if($this->postParams){
+      if(is_array($this->postParams)){
         $strParams = $this->arrayToString($this->postParams);
-      }
-      else
-      {
+      }else{
         $strParams = $this->postParams;
       }
     }
@@ -614,18 +549,14 @@ class Connector
 
     $openResource = @fsockopen($host, $port, $this->lastErrorCode, $this->lastError, $this->timeout);
 
-    if(!$openResource)
-    {
+    if(!$openResource){
       return false;
     }
 
     $headers = "POST $path HTTP/1.1\r\n";
-    if($hostname)
-    {
+    if($hostname){
       $headers .= "Host: $hostname\r\n";
-    }
-    else
-    {
+    }else{
       $headers .= "Host: $host\r\n";
     }
     $headers .= "Content-Type: application/x-www-form-urlencoded\r\n";
@@ -636,8 +567,7 @@ class Connector
 
     @fwrite($openResource, $headers);
 
-    if($sleepBeforeClose > 0)
-    {
+    if($sleepBeforeClose > 0){
       sleep($sleepBeforeClose);
     }
     @fclose($openResource);

@@ -1,9 +1,9 @@
 <?php
 
 /** PHPMailer root directory */
-if (!defined('PHPMailer_ROOT')) {
-    define('PHPMailer_ROOT', dirname(__FILE__) . '/');
-    require(PHPMailer_ROOT . 'PHPMailer/PHPMailerAutoload.php');
+if(!defined('PHPMailer_ROOT')){
+  define('PHPMailer_ROOT', dirname(__FILE__).'/');
+  require(PHPMailer_ROOT.'PHPMailer/PHPMailerAutoload.php');
 }
 
 class PHPMailerManager extends PHPMailer

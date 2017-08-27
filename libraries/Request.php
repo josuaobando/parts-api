@@ -10,6 +10,7 @@ class Request
 
   /**
    * it creates a new instance of Request
+   *
    * @param array $params
    */
   public function __construct($params = null)
@@ -19,17 +20,15 @@ class Request
 
   /**
    * set the request parameters
+   *
    * @param array $params
    */
   public function setParams($params = null)
   {
     self::clearParams();
-    if ($params && is_array($params))
-    {
-      foreach ($params as $key=>$value)
-      {
-        if (!$key || trim($key)=='')
-        {
+    if($params && is_array($params)){
+      foreach($params as $key => $value){
+        if(!$key || trim($key) == ''){
           continue;
         }
 
@@ -50,10 +49,10 @@ class Request
   {
     $value = $this->params[$key];
 
-    if (!is_array($value)&&!is_object($value) && (is_null($value) || trim($value)==''))
-    {
+    if(!is_array($value) && !is_object($value) && (is_null($value) || trim($value) == '')){
       return $default;
     }
+
     return $value;
   }
 
@@ -83,12 +82,9 @@ class Request
    */
   public function clearParams()
   {
-    if (is_array($this->params))
-    {
+    if(is_array($this->params)){
       array_splice($this->params, 0);
-    }
-    else
-    {
+    }else{
       $this->params = array();
     }
   }
@@ -96,17 +92,20 @@ class Request
   /**
    * Is empty request check
    */
-  public function isEmpty(){
+  public function isEmpty()
+  {
     return (!is_array($this->params) || count($this->params) == 0);
   }
 
   /**
    * Loads a secondary request in, used mostly when a json request is made
+   *
    * @param array $params
    * @param boolean $force
    */
-  public function overwriteRequest($params, $force = false){
-    if (!is_array($this->params) || count($this->params) == 0 || $force){
+  public function overwriteRequest($params, $force = false)
+  {
+    if(!is_array($this->params) || count($this->params) == 0 || $force){
       $this->setParams($params);
     }
   }
@@ -117,13 +116,12 @@ class Request
   public function __toString()
   {
     $str = "";
-    if (is_array($this->params))
-    {
-      foreach ($this->params as $key=>$value)
-      {
+    if(is_array($this->params)){
+      foreach($this->params as $key => $value){
         $str .= "$key=$value\n";
       }
     }
+
     return $str;
   }
 }

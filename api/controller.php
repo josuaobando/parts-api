@@ -10,7 +10,7 @@ function startController()
 {
   //check if the request was sent using json
   $wsRequest = new WSRequest(json_decode(file_get_contents("php://input"), true));
-  if ($wsRequest->isEmpty()){
+  if($wsRequest->isEmpty()){
     //if empty try with the regular request
     $wsRequest->overwriteRequest($_REQUEST);
   }
@@ -23,27 +23,20 @@ function startController()
 
   //get session id
   $sessionId = $wsRequest->getParam('sid');
-  if($sessionId)
-  {
+  if($sessionId){
     Session::startSession($sessionId);
     $account = Session::getAccount();
-    if($account->isAuthenticated())
-    {
+    if($account->isAuthenticated()){
       //call the proper function
-      if(function_exists($prefix.$f))
-      {
+      if(function_exists($prefix.$f)){
         //call the function and exit since the function will do the whole work
         call_user_func($prefix.$f);
         exit();
-      }
-      else
-      {
+      }else{
         //this section is to handle the invalid function error
         $wsResponse = new WSResponseError("Invalid function in controller($f)");
       }
-    }
-    else
-    {
+    }else{
       //this section is to handle the invalid function error
       $wsResponse = new WSResponseError('Session has expired');
     }

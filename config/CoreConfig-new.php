@@ -29,12 +29,12 @@ class CoreConfig
   /**
    * Webservices global timeout
    */
-  const WS_TIMEOUT = 60;
+  const WS_TIMEOUT = 10;
 
   /**
    * Web services global connection timeout
    */
-  const WS_TIMEOUT_ON_CONNECT = 30;
+  const WS_TIMEOUT_ON_CONNECT = 10;
 
   /**
    * max execution time
@@ -59,36 +59,36 @@ class CoreConfig
   const DB_PASSWORD__ = 'DB_PASSWORD__';
 
   //development main database
-  const DB_NAME = 'api';
-  const DB_HOSTNAME__api = 'bG9jYWxob3N0'; //localhost
-  const DB_USERNAME__api = 'cm9vdA==';     //root
-  const DB_PASSWORD__api = 'MjQxMDc5';
+  const DB_NAME = 'software_api';
+  const DB_HOSTNAME__software_api = 'MzUuMTg0LjE2NS40Mg=='; //localhost
+  const DB_USERNAME__software_api = 'am9iYW5kb2M=';     //jobandoc
+  const DB_PASSWORD__software_api = 'ajI5MDlP';  //j2909O
 
   /**
    * Mail configuration
    */
-  const MAIL_SEND_ACTIVE = true;
+  const MAIL_SEND_ACTIVE = false;
   const MAIL_STANDARD = false;
-  const MAIL_RETURN = 'mail@mail.com';
-  const MAIL_FROM = 'mail@mail.com';
-  const MAIL_HOST = 'smtp.mail.com';
-  const MAIL_PORT = 587;
-  const MAIL_USERNAME = 'mail@mail.com';
-  const MAIL_PASSWORD = 'password';
-  const MAIL_AUTH = true;
-  const MAIL_DEV = 'dev@mail.com';
+  const MAIL_RETURN = 'josua@midascashier.com';
+  const MAIL_FROM = 'josua@midascashier.com';
+  const MAIL_HOST = 'srv-mail1.im.priv';
+  const MAIL_PORT = '25';
+  const MAIL_USERNAME = 'josua@midascashier.com';
+  const MAIL_PASSWORD = '123';
+  const MAIL_AUTH = false;
+  const MAIL_DEV = 'josua@midascashier.com';
 
   /**
    * URL where the message queue service is located
    */
-  const MESSAGE_QUEUE_URL = 'http://api.dinerosegurohf:8080/mqueue/ws/mQueueProcessor.php';
+  const MESSAGE_QUEUE_URL = 'http://api:8080/mqueue/ws/mQueueProcessor.php';
 
   /**
    * path where all system logs will be stored
    *
    * @var string
    */
-  const LOG_PATH = "D:/Tavo/api/@LOGS/";
+  const LOG_PATH = "C:/Logs";
 
   /**
    * options to configure the db stats tracking process
@@ -155,11 +155,6 @@ class CoreConfig
   const TRACK_WS_STATS_PATTERN = null;
 
   /**
-   * Rows for page
-   */
-  const PAGINATION_TABLE_MAX_ROWS = 20;
-
-  /**
    * timezone for application (set to America/Costa_Rica)
    *
    * @var string
@@ -171,27 +166,6 @@ class CoreConfig
    */
   const SYS_ENCODING = 'UTF-8';
 
-  /**
-   * Execute services
-   */
-  const CRON_JOBS_ACTIVE = false;
-  const CRON_JOB_SERVICES = 'http://api.dinerosegurohf:8080/api/services.php';
-
-  /**
-   * P2P controller to check stickiness
-   */
-  const WS_STICKINESS_ACTIVE = false;
-  const WS_STICKINESS_CHECK_CONNECTION = false;
-  const WS_STICKINESS_URL = 'http://dev.p2pcontroller.com/';
-  const WS_STICKINESS_CREDENTIAL_COMPANY = '5';
-  const WS_STICKINESS_CREDENTIAL_PASSWORD = '123';
-  const WS_STICKINESS_CREDENTIAL_KEY = ')&#$987';
-
-  /**
-   * validate similar customer
-   */
-  const CUSTOMER_SIMILAR_PERCENT_ACTIVE = true;
-  const CUSTOMER_SIMILAR_PERCENT = 90;
 }
 
 ?>

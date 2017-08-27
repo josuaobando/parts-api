@@ -77,8 +77,7 @@ class Account
   public function __construct($username = null)
   {
     $this->tblAccount = TblAccount::getInstance();
-    if($username)
-    {
+    if($username){
       $this->username = $username;
       $this->loadAccount();
     }
@@ -100,10 +99,8 @@ class Account
 
     //get account permissions
     $permissions = $this->tblAccount->getPermission($this->accountId);
-    if($permissions)
-    {
-      foreach($permissions as $permission)
-      {
+    if($permissions){
+      foreach($permissions as $permission){
         array_push($this->permission, $permission['PermissionCode']);
       }
     }
@@ -197,8 +194,7 @@ class Account
   public function changePassword($newPassword)
   {
     $r = $this->tblAccount->changePassword($this->accountId, $newPassword);
-    if($r)
-    {
+    if($r){
       $this->password = $newPassword;
     }
 
