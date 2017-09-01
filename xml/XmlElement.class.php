@@ -416,12 +416,12 @@ class XmlElement
   {
     $text = "<$this->name";
     foreach($this->attributes as $key => $value){
-      $text .= " $key=\"".$value.'"';
+      $text .= " $key=\"" . $value . '"';
     }
     $text .= ">";
     if($this->value){
       if($this->isCDATA){
-        $text .= "<![CDATA[".$this->value."]]>";
+        $text .= "<![CDATA[" . $this->value . "]]>";
       }else{
         $text .= $this->value;
       }

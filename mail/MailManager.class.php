@@ -136,7 +136,7 @@ class MailManager
     $mailer->SMTPSecure = "tls";
 
     if(!$mailer->send()){
-      MailManager::$lastError = 'Email was not sent: '.$mailer->ErrorInfo;
+      MailManager::$lastError = 'Email was not sent: ' . $mailer->ErrorInfo;
 
       return false;
     }
@@ -156,17 +156,17 @@ class MailManager
    */
   private static function sendStandardEmailNoAttachments($to, $subject, $body)
   {
-    $headers = 'MIME-Version: 1.0'."\r\n";
+    $headers = 'MIME-Version: 1.0' . "\r\n";
     if(MailManager::$htmlFormat){
-      $headers .= 'Content-type: text/html; charset=iso-8859-1'."\r\n";
+      $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
     }else{
-      $headers .= 'Content-type: text/plain; charset=iso-8859-2'."\r\n";
+      $headers .= 'Content-type: text/plain; charset=iso-8859-2' . "\r\n";
     }
-    $headers .= 'From: '.MailManager::$from."\r\n";
+    $headers .= 'From: ' . MailManager::$from . "\r\n";
     if(Util::isDEV()){
       $to = CoreConfig::MAIL_DEV;
     }
-    if(@mail($to, $subject, $body, $headers, "-f".MailManager::$return)){
+    if(@mail($to, $subject, $body, $headers, "-f" . MailManager::$return)){
       return true;
     }
 
@@ -207,8 +207,8 @@ class MailManager
     $htmlMessage = nl2br($message);
     $fromEmail = strip_tags(MailManager::$from);
 
-    $boundary1 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
-    $boundary2 = rand(0, 9)."-".rand(10000000000, 9999999999)."-".rand(10000000000, 9999999999)."=:".rand(10000, 99999);
+    $boundary1 = rand(0, 9) . "-" . rand(10000000000, 9999999999) . "-" . rand(10000000000, 9999999999) . "=:" . rand(10000, 99999);
+    $boundary2 = rand(0, 9) . "-" . rand(10000000000, 9999999999) . "-" . rand(10000000000, 9999999999) . "=:" . rand(10000, 99999);
 
     //Email without Attachment
     //set headers
@@ -464,9 +464,9 @@ AKAM;
       $lang = strtoupper($lang);
     }
 
-    $templatePath = CoreConfig::TEMPLATE_PATH.$name.$lang.CoreConfig::TEMPLATE_FILE_EXTENSION;
+    $templatePath = CoreConfig::TEMPLATE_PATH . $name . $lang . CoreConfig::TEMPLATE_FILE_EXTENSION;
     if(!Util::file_exists($templatePath)){
-      $templatePath = CoreConfig::TEMPLATE_PATH.$name.CoreConfig::TEMPLATE_FILE_EXTENSION;
+      $templatePath = CoreConfig::TEMPLATE_PATH . $name . CoreConfig::TEMPLATE_FILE_EXTENSION;
       if(!Util::file_exists($templatePath)){
         return "";
       }
@@ -475,7 +475,7 @@ AKAM;
     $template = file_get_contents($templatePath, FILE_USE_INCLUDE_PATH);
     if(count($params) > 0){
       foreach($params as $key => $value){
-        $template = str_replace("{".$key."}", $value, $template);
+        $template = str_replace("{" . $key . "}", $value, $template);
       }
     }
 

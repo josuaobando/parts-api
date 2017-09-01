@@ -197,7 +197,7 @@ class WSResponse
       $wsResponseTxt = $this->getJSONResponse();
 
       if($this->JSONCallback){
-        $wsResponseTxt = $this->JSONCallback." ( $wsResponseTxt )";
+        $wsResponseTxt = $this->JSONCallback . " ( $wsResponseTxt )";
       }
 
     }else{

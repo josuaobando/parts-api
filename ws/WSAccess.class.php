@@ -23,7 +23,7 @@ class WSAccess
     if($_SERVER['REMOTE_ADDR'] == '127.0.0.1'){
       $ip = isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
     }else{
-      $ip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR']."," : "").$_SERVER['REMOTE_ADDR'];
+      $ip = (isset($_SERVER['HTTP_X_FORWARDED_FOR']) ? $_SERVER['HTTP_X_FORWARDED_FOR'] . "," : "") . $_SERVER['REMOTE_ADDR'];
     }
 
     return $ip;

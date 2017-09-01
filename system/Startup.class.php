@@ -71,7 +71,7 @@ class Startup
       }
 
       //look for the core system path
-      $startupFilePath = $includedDirectory."/system/Startup.class.php";
+      $startupFilePath = $includedDirectory . "/system/Startup.class.php";
       $startupFilePath = str_replace("\\", "/", $startupFilePath);
       if(file_exists($startupFilePath)){
         //avoid loading a duplicated Startup file
@@ -103,13 +103,13 @@ class Startup
 
     //#1 look for the class into the system folders
     foreach(self::$sysDirectories as $directory){
-      $classFile = $directory.DIRECTORY_SEPARATOR.$standardName;
+      $classFile = $directory . DIRECTORY_SEPARATOR . $standardName;
       if(file_exists($classFile)){
         require_once($classFile);
 
         return true;
       }
-      $classFile = $directory.DIRECTORY_SEPARATOR.$defaultName;
+      $classFile = $directory . DIRECTORY_SEPARATOR . $defaultName;
       if(file_exists($classFile)){
         require_once($classFile);
 

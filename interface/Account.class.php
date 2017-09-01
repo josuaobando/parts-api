@@ -28,6 +28,11 @@ class Account
   private $username;
 
   /**
+   * @var fullname
+   */
+  private $fullname;
+
+  /**
    * password
    *
    * @var string
@@ -94,6 +99,7 @@ class Account
     $this->companyId = $accountData['Company_Id'];
     $this->accountId = $accountData['Account_Id'];
     $this->password = $accountData['Password'];
+    $this->fullname = $accountData['FullName'];
     $this->apiUser = $accountData['API_User'];
     $this->apiPass = $accountData['API_Pass'];
 
@@ -212,6 +218,11 @@ class Account
 
     $data['username'] = $this->username;
     $data['authenticated'] = $this->authenticated;
+
+    if($this->authenticated){
+      $data['fullName'] = $this->fullname;
+      $data['permission'] = $this->permission;
+    }
 
     return $data;
   }

@@ -18,7 +18,7 @@ try{
   echo $r ? "ok" : "unknown error";
 }catch(Exception $ex){
   ExceptionManager::handleException($ex);
-  echo "error: ".$ex->getMessage();
+  echo "error: " . $ex->getMessage();
 }
 
 ?>

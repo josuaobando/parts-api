@@ -44,16 +44,16 @@ class DBException extends GeneralException
 
     $details = "";
     if($this->user){
-      $details .= "Username: ".$this->user." $newLine";
+      $details .= "Username: " . $this->user . " $newLine";
     }
     if($this->db){
-      $details .= "Database: ".$this->db." $newLine";
+      $details .= "Database: " . $this->db . " $newLine";
     }
     if($this->server){
-      $details .= "Server: ".$this->server." $newLine";
+      $details .= "Server: " . $this->server . " $newLine";
     }
-    $details .= "SQL Executed: [ ".$this->sql." ]$newLine";
-    $details .= "Database error: ".$this->errorMsg."$newLine";
+    $details .= "SQL Executed: [ " . $this->sql . " ]$newLine";
+    $details .= "Database error: " . $this->errorMsg . "$newLine";
 
     return $details;
   }

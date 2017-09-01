@@ -20,8 +20,8 @@ class Reader_XML extends Reader
     $xmlParser = new XmlParser();
     $xml = $xmlParser->loadXml($data);
     if(!$xml){
-      $exceptionMessage = "Xml Parser: ".$xmlParser->getErrorMsg()." (Error code: ".$xmlParser->getErrorCode().")\n\n";
-      $exceptionMessage .= $data."\n";
+      $exceptionMessage = "Xml Parser: " . $xmlParser->getErrorMsg() . " (Error code: " . $xmlParser->getErrorCode() . ")\n\n";
+      $exceptionMessage .= $data . "\n";
       throw new WSException($exceptionMessage);
     }
 

@@ -24,9 +24,11 @@ function startController()
   //get session id
   $sessionId = $wsRequest->getParam('token');
   if($sessionId){
+
     Session::startSession($sessionId);
     $account = Session::getAccount();
-    if($account->isAuthenticated()){
+
+    if(!CoreConfig::REQUIRED_SESSION || $account->isAuthenticated()){
       //call the proper function
       if(function_exists($prefix . $action)){
         //call the function and exit since the function will do the whole work
@@ -36,6 +38,7 @@ function startController()
         //this section is to handle the invalid function error
         $wsResponse = new WSResponseError("Invalid function in controller($action)");
       }
+
     }else{
       //this section is to handle the invalid function error
       $wsResponse = new WSResponseError('Session has expired');
@@ -60,17 +63,17 @@ function startController()
 }
 
 /**
- * login account
+ * start session
  */
-function ctrl_authenticate()
+function ctrl_startSession()
 {
   require_once('api/client.php');
 }
 
 /**
- * get countries
+ * login account
  */
-function ctrl_getCountries()
+function ctrl_authenticate()
 {
   require_once('api/client.php');
 }

@@ -28,9 +28,9 @@ class Reader_HTML extends Reader
 
     if($errors){
       $exceptionMessage = "HTML Parser: \n\n";
-      $exceptionMessage .= $data."\n\n";
+      $exceptionMessage .= $data . "\n\n";
       $exceptionMessage .= "HTML Error: \n\n";
-      $exceptionMessage .= $errors."\n";
+      $exceptionMessage .= $errors . "\n";
       throw new WSException($exceptionMessage);
     }
 
@@ -45,7 +45,7 @@ class Reader_HTML extends Reader
       }
     }else{
       $exceptionMessage = "HTML Parser: \n\n";
-      $exceptionMessage .= $data."\n\n";
+      $exceptionMessage .= $data . "\n\n";
       throw new WSException($exceptionMessage);
     }
 

@@ -83,7 +83,7 @@ class Util
       return $empty;
     }
 
-    $result = "'".implode("','", $array)."'";
+    $result = "'" . implode("','", $array) . "'";
 
     return $result;
   }
@@ -360,18 +360,18 @@ class Util
   public static function timeForDisplay($time)
   {
     if($time < 60){
-      return number_format($time, 2)." seconds";
+      return number_format($time, 2) . " seconds";
     }
     $time = $time / 60;
     if($time < 60){
-      return number_format($time, 2)." minutes";
+      return number_format($time, 2) . " minutes";
     }
     $time = $time / 60;
     if($time < 60){
-      return number_format($time, 2)." hours";
+      return number_format($time, 2) . " hours";
     }
 
-    return number_format($time, 2)." [no scale]";
+    return number_format($time, 2) . " [no scale]";
   }
 
   /**
@@ -393,7 +393,7 @@ class Util
     $hours = intval(intval($sec) / 3600);
 
     // add hours to $hms (with a leading 0 if asked for)
-    $hms .= ($padHours) ? str_pad($hours, 2, "0", STR_PAD_LEFT).":" : $hours.":";
+    $hms .= ($padHours) ? str_pad($hours, 2, "0", STR_PAD_LEFT) . ":" : $hours . ":";
 
     // dividing the total seconds by 60 will give us the number of minutes
     // in total, but we're interested in *minutes past the hour* and to get
@@ -401,7 +401,7 @@ class Util
     $minutes = intval(($sec / 60) % 60);
 
     // add minutes to $hms (with a leading 0 if needed)
-    $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT).":";
+    $hms .= str_pad($minutes, 2, "0", STR_PAD_LEFT) . ":";
 
     // seconds past the minute are found by dividing the total number of seconds
     // by 60 and using the remainder
@@ -428,22 +428,22 @@ class Util
     }
 
     if($mem < 1024){
-      return number_format($mem, 2)." bytes";
+      return number_format($mem, 2) . " bytes";
     }
     $mem = $mem / 1024;
     if($mem < 1024){
-      return number_format($mem, 2)." kb";
+      return number_format($mem, 2) . " kb";
     }
     $mem = $mem / 1024;
     if($mem < 1024){
-      return number_format($mem, 2)." mb";
+      return number_format($mem, 2) . " mb";
     }
     $mem = $mem / 1024;
     if($mem < 1024){
-      return number_format($mem, 2)." gb";
+      return number_format($mem, 2) . " gb";
     }
 
-    return number_format($mem, 2)." [no scale]";
+    return number_format($mem, 2) . " [no scale]";
   }
 
   /**
@@ -521,7 +521,7 @@ class Util
         $value = self::objToStr($value);
       }
 
-      $result .= $key.$equal.$value.$separator;
+      $result .= $key . $equal . $value . $separator;
     }
 
     return $result;
@@ -548,9 +548,9 @@ class Util
     $result = "";
     foreach($array as $element){
       if(is_object($element)){
-        $result .= self::objToStr($element).$separator;
+        $result .= self::objToStr($element) . $separator;
       }else{
-        $result .= $element.$separator;
+        $result .= $element . $separator;
       }
     }
     if(substr($result, -1) == $separator){
@@ -604,14 +604,14 @@ class Util
         $arrayData = '';
         foreach($value as $k => $v){
           if($isAssoc){
-            $arrayData .= $key."[$k]".$keyGlue.$v.$elementGlue;
+            $arrayData .= $key . "[$k]" . $keyGlue . $v . $elementGlue;
           }else{
-            $arrayData .= $key."[]".$keyGlue.$v.$elementGlue;
+            $arrayData .= $key . "[]" . $keyGlue . $v . $elementGlue;
           }
         }
         $str .= $arrayData;
       }else{
-        $str .= $key.$keyGlue.$value.$elementGlue;
+        $str .= $key . $keyGlue . $value . $elementGlue;
       }
     }
     $str = substr($str, 0, -1);
@@ -665,7 +665,7 @@ class Util
         $value = $format;
         foreach($valueId as $valueIdK){
           $valueIdV = $v[$valueIdK];
-          $value = str_replace("{".$valueIdK."}", $valueIdV, $value);
+          $value = str_replace("{" . $valueIdK . "}", $valueIdV, $value);
         }
       }else{
         $value = $valueId ? $v [$valueId] : $v;
@@ -790,10 +790,10 @@ class Util
     }
 
     header('Expires: Wed, 23 Dec 1980 00:30:00 GMT');
-    header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+    header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: no-cache, must-revalidate');
     header('Pragma: no-cache');
-    header('Content-Type: application/'.$format);
+    header('Content-Type: application/' . $format);
 
     if($format == 'xml'){
       echo "<?xml version=\"1.0\" encoding=\"$encoding\"?>";
@@ -816,8 +816,8 @@ class Util
   {
     $ps = explode(PATH_SEPARATOR, ini_get('include_path'));
     foreach($ps as $path){
-      if(file_exists($path.'/'.$file)){
-        return $path.'/'.$file;
+      if(file_exists($path . '/' . $file)){
+        return $path . '/' . $file;
       }
     }
     if(file_exists($file)){
@@ -942,7 +942,7 @@ class Util
   {
     $items = scandir($dir);
     foreach($items as $item){
-      $path = $dir.DIRECTORY_SEPARATOR.$item;
+      $path = $dir . DIRECTORY_SEPARATOR . $item;
       if(!is_dir($path) || //not a directory
         $item == '.' || //current directory
         $item == '..' || //parent directory
@@ -1117,7 +1117,7 @@ class Util
     if($scratchedLength < 0){
       $scratchedLength = 0;
     }
-    $scratchedValue = str_repeat("*", $scratchedLength).substr($value, $scratchedLength, $digits);
+    $scratchedValue = str_repeat("*", $scratchedLength) . substr($value, $scratchedLength, $digits);
 
     return $scratchedValue;
   }
@@ -1210,7 +1210,7 @@ class Util
         $value = Util::escapeText($value);
       }
       if($config && is_array($config ['prefix']) && array_intersect_key(array($field => $value), $config ['prefix'])){
-        $value = $config ['prefix'] [$field].$value;
+        $value = $config ['prefix'] [$field] . $value;
       }
       if($config && is_array($config ['replace']) && array_intersect_key(array($field => $value), $config ['replace'])){
         $value = $config ['replace'][$field];
@@ -1460,7 +1460,7 @@ class Util
         }
 
         if(!$skip){
-          $returnValue .= (($encodeFields) ? urlencode($k) : $k)."=".(($encodeFields) ? urlencode($v) : $v)."&";
+          $returnValue .= (($encodeFields) ? urlencode($k) : $k) . "=" . (($encodeFields) ? urlencode($v) : $v) . "&";
         }
       }
       $returnValue = substr($returnValue, 0, -1);
@@ -1549,7 +1549,7 @@ class Util
       return "";
     }
 
-    $string = " ".$string;
+    $string = " " . $string;
     $ini = strpos($string, $start);
     if($ini == 0){
       return "";
@@ -1589,7 +1589,7 @@ class Util
     $gmtTime = strtotime($date->format('Y-m-d H:i:s'));
 
     //generate new date using offset
-    $newDate = date('Y-m-d H:i:s', strtotime($offset." hours", $gmtTime));
+    $newDate = date('Y-m-d H:i:s', strtotime($offset . " hours", $gmtTime));
 
     return $newDate;
   }

@@ -85,7 +85,7 @@ class ExceptionManager
 
     $message = "Default error handler.\n\n";
     $message .= "Type: $type\n";
-    $message .= "Date: ".date('m-d-Y H:i:s a')."\n";
+    $message .= "Date: " . date('m-d-Y H:i:s a') . "\n";
     $message .= "Error Code: $errorCode\n";
     $message .= "Details: $errorMessage\n";
     $message .= "Source: $file:$line\n\n";

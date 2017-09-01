@@ -62,9 +62,9 @@ class Db
   protected function loadSettings($dbName)
   {
     $this->dbName = $dbName;
-    $this->dbHost = Encrypt::decode(constant("CoreConfig::".CoreConfig::DB_HOSTNAME__.$dbName));
-    $this->dbUsername = Encrypt::decode(constant("CoreConfig::".CoreConfig::DB_USERNAME__.$dbName));
-    $this->dbPassword = Encrypt::decode(constant("CoreConfig::".CoreConfig::DB_PASSWORD__.$dbName));
+    $this->dbHost = Encrypt::decode(constant("CoreConfig::" . CoreConfig::DB_HOSTNAME__ . $dbName));
+    $this->dbUsername = Encrypt::decode(constant("CoreConfig::" . CoreConfig::DB_USERNAME__ . $dbName));
+    $this->dbPassword = Encrypt::decode(constant("CoreConfig::" . CoreConfig::DB_PASSWORD__ . $dbName));
   }
 
   /**
@@ -196,9 +196,9 @@ class Db
       $warnings = @mysqli_fetch_array($warningsResult);
 
       $message = "Database's Warning has been detected.\n\n";
-      $message .= "Level: ".$warnings['Level']."\n";
-      $message .= "Code: ".$warnings['Code']."\n";
-      $message .= "Message: ".$warnings['Message']."\n";
+      $message .= "Level: " . $warnings['Level'] . "\n";
+      $message .= "Code: " . $warnings['Code'] . "\n";
+      $message .= "Message: " . $warnings['Message'] . "\n";
       $message .= "SQL Statement: $query";
 
       MailManager::sendCriticalErrorEmail("Database Warning", nl2br($message));
@@ -241,7 +241,7 @@ class Db
       $this->timeMonitorResult['connect'] = Util::calculateProcessTime($startTime);
 
       if(@mysqli_connect_errno()){
-        throw new DBException(DBException::$ERROR_CONNECTION_REFUSED, $sql, 'Could not connect: '.@mysqli_connect_error(), $this->dbUsername, $this->dbName, $this->dbHost);
+        throw new DBException(DBException::$ERROR_CONNECTION_REFUSED, $sql, 'Could not connect: ' . @mysqli_connect_error(), $this->dbUsername, $this->dbName, $this->dbHost);
       }
 
       @mysqli_query($con, "SET NAMES 'UTF8'");
@@ -349,12 +349,12 @@ class Db
       foreach($params as $key => $value){
         if(is_array($value)){
           $valueStr = Util::generateStrList($value);
-          $sql = str_replace("{".$key."}", $valueStr, $sql);
+          $sql = str_replace("{" . $key . "}", $valueStr, $sql);
         }else if(is_object($value)){
           $objStr = Encrypt::pack($value);
-          $sql = str_replace("{".$key."}", $objStr, $sql);
+          $sql = str_replace("{" . $key . "}", $objStr, $sql);
         }else{
-          $sql = str_replace("{".$key."}", @mysqli_escape_string($con, $value), $sql);
+          $sql = str_replace("{" . $key . "}", @mysqli_escape_string($con, $value), $sql);
         }
       }
     }

@@ -56,7 +56,7 @@ class GeneralException extends Exception
   private function getDescription()
   {
     $newLine = "\n";
-    $details = $newLine.$this->description.$newLine;
+    $details = $newLine . $this->description . $newLine;
 
     return $details;
   }
@@ -73,9 +73,9 @@ class GeneralException extends Exception
     $newLine = "\n";
 
     $details = $newLine;
-    $details .= "File: ".$this->getFile().":".$this->getLine()."$newLine";
-    $details .= "Time: ".date("F jS, Y, g:i a")."$newLine";
-    $details .= "Mem: ".$mem."$newLine";
+    $details .= "File: " . $this->getFile() . ":" . $this->getLine() . "$newLine";
+    $details .= "Time: " . date("F jS, Y, g:i a") . "$newLine";
+    $details .= "Mem: " . $mem . "$newLine";
 
     return $details;
   }
@@ -131,9 +131,9 @@ class GeneralException extends Exception
     if($this->session && is_array($this->session) && count($this->session) > 0){
       foreach($this->session as $key => $value){
         if(is_object($value) && !method_exists($value, '__toString')){
-          $details .= "$key = ".get_class($value).$newLine;
+          $details .= "$key = " . get_class($value) . $newLine;
         }else if(is_object($value) && method_exists($value, '__toString')){
-          $details .= "$key = ".get_class($value).$newLine;
+          $details .= "$key = " . get_class($value) . $newLine;
         }else{
           $details .= "$key = unknown value type $newLine";
         }
@@ -144,20 +144,20 @@ class GeneralException extends Exception
     $details .= "Server:$newLine";
     $details .= $newLine;
     if($this->serverSettings && is_array($this->serverSettings) && count($this->serverSettings) > 0){
-      $details .= "HTTP_HOST = ".$this->serverSettings['HTTP_HOST'].$newLine;
-      $details .= "SERVER_NAME = ".$this->serverSettings['SERVER_NAME'].$newLine;
-      $details .= "SERVER_ADDR = ".$this->serverSettings['SERVER_ADDR'].$newLine;
-      $details .= "SERVER_PORT = ".$this->serverSettings['SERVER_PORT'].$newLine;
-      $details .= "REMOTE_ADDR = ".$this->serverSettings['REMOTE_ADDR'].$newLine;
-      $details .= "SCRIPT_FILENAME = ".$this->serverSettings['SCRIPT_FILENAME'].$newLine;
-      $details .= "REMOTE_PORT = ".$this->serverSettings['REMOTE_PORT'].$newLine;
-      $details .= "GATEWAY_INTERFACE = ".$this->serverSettings['GATEWAY_INTERFACE'].$newLine;
-      $details .= "SERVER_PROTOCOL = ".$this->serverSettings['SERVER_PROTOCOL'].$newLine;
-      $details .= "REQUEST_METHOD = ".$this->serverSettings['REQUEST_METHOD'].$newLine.$newLine;
+      $details .= "HTTP_HOST = " . $this->serverSettings['HTTP_HOST'] . $newLine;
+      $details .= "SERVER_NAME = " . $this->serverSettings['SERVER_NAME'] . $newLine;
+      $details .= "SERVER_ADDR = " . $this->serverSettings['SERVER_ADDR'] . $newLine;
+      $details .= "SERVER_PORT = " . $this->serverSettings['SERVER_PORT'] . $newLine;
+      $details .= "REMOTE_ADDR = " . $this->serverSettings['REMOTE_ADDR'] . $newLine;
+      $details .= "SCRIPT_FILENAME = " . $this->serverSettings['SCRIPT_FILENAME'] . $newLine;
+      $details .= "REMOTE_PORT = " . $this->serverSettings['REMOTE_PORT'] . $newLine;
+      $details .= "GATEWAY_INTERFACE = " . $this->serverSettings['GATEWAY_INTERFACE'] . $newLine;
+      $details .= "SERVER_PROTOCOL = " . $this->serverSettings['SERVER_PROTOCOL'] . $newLine;
+      $details .= "REQUEST_METHOD = " . $this->serverSettings['REQUEST_METHOD'] . $newLine . $newLine;
 
-      $details .= "QUERY_STRING = ".$this->serverSettings['QUERY_STRING'].$newLine.$newLine;
-      $details .= "REQUEST_URI = ".$this->serverSettings['REQUEST_URI'].$newLine.$newLine;
-      $details .= "HTTP_USER_AGENT = ".$this->serverSettings['HTTP_USER_AGENT'].$newLine.$newLine;
+      $details .= "QUERY_STRING = " . $this->serverSettings['QUERY_STRING'] . $newLine . $newLine;
+      $details .= "REQUEST_URI = " . $this->serverSettings['REQUEST_URI'] . $newLine . $newLine;
+      $details .= "HTTP_USER_AGENT = " . $this->serverSettings['HTTP_USER_AGENT'] . $newLine . $newLine;
     }
 
     return $details;
@@ -172,7 +172,7 @@ class GeneralException extends Exception
   {
     $newLine = "\n";
 
-    $representation = $this->getMessage().$newLine;
+    $representation = $this->getMessage() . $newLine;
     $representation .= $this->getDescription();
     $representation .= $this->getTechnicalDetails();
     $representation .= $this->getStack();

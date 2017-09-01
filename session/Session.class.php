@@ -106,28 +106,6 @@ class Session
     return $account;
   }
 
-  /**
-   * get countries
-   *
-   * @return array
-   */
-  public static function getCountries()
-  {
-    $countriesSession = self::getSessionObject(self::SID_COUNTRIES);
-    if(!$countriesSession)
-    {
-      $tblCountry = TblCountry::getInstance();
-      $countries = $tblCountry->getCountries();
-      self::storeSessionObject(self::SID_COUNTRIES, $countries, true);
-    }
-    else
-    {
-      $countries = $countriesSession;
-    }
-
-    return $countries;
-  }
-
 }
 
 ?>

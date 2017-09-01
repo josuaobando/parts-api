@@ -253,7 +253,7 @@ class WS
    */
   public function execPostMethod($webservice, $method, $params = null)
   {
-    $webservice .= "/".$method;
+    $webservice .= "/" . $method;
 
     return $this->execPost($webservice, $params);
   }
@@ -305,7 +305,7 @@ class WS
     $obj = $connector->execSoapCall($wsdl, $method, $params, $headers, $options, $setup);
 
     if($setup['keepPrevRequest']){
-      $this->lastRequest .= "\n".$connector->__toString();
+      $this->lastRequest .= "\n" . $connector->__toString();
     }else{
       $this->lastRequest = $connector->__toString();
     }

@@ -3,6 +3,27 @@
 require_once('system/Startup.class.php');
 
 /**
+ * start session
+ *
+ * @param $wsRequest
+ * @return WSResponseError|WSResponseOk
+ */
+function startSession($wsRequest)
+{
+  try{
+
+    $wsResponse = new WSResponseOk();
+    $token = Session::startSession();
+    $wsResponse->addElement('token', $token);
+
+  }catch(InvalidParameterException $ex){
+    $wsResponse = new WSResponseError($ex->getMessage());
+  }
+
+  return $wsResponse;
+}
+
+/**
  * account login
  *
  * @param WSRequest $wsRequest
@@ -11,8 +32,7 @@ require_once('system/Startup.class.php');
  */
 function authenticate($wsRequest)
 {
-  try
-  {
+  try{
     $username = trim($wsRequest->requireNotNullOrEmpty('username'));
     $password = trim($wsRequest->requireNotNullOrEmpty('password'));
 
@@ -27,9 +47,7 @@ function authenticate($wsRequest)
       $wsResponse = new WSResponseError('Invalid information!');
     }
 
-  }
-  catch(InvalidParameterException $ex)
-  {
+  }catch(InvalidParameterException $ex){
     $wsResponse = new WSResponseError($ex->getMessage());
   }
 
@@ -45,14 +63,11 @@ function authenticate($wsRequest)
  */
 function getCountries($wsRequest)
 {
-  try
-  {
+  try{
     $countries = Session::getCountries();
     $wsResponse = new WSResponseOk();
     $wsResponse->addElement('countries', $countries);
-  }
-  catch(InvalidParameterException $ex)
-  {
+  }catch(InvalidParameterException $ex){
     $wsResponse = new WSResponseError($ex->getMessage());
   }
 

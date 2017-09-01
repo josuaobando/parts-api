@@ -67,7 +67,7 @@ class Log
     //replace variables if there is any
     if($args && is_array($args)){
       foreach($args as $key => $value){
-        $message = str_replace("{".$key."}", $value, $message);
+        $message = str_replace("{" . $key . "}", $value, $message);
       }
     }
 
@@ -75,9 +75,9 @@ class Log
     $content = str_replace("%{datetime}", $datetime, $content);
     $content = str_replace("%{message}", $message, $content);
 
-    $logFile = "/".Log::$prefix.Log::$postfixes[$level].Log::$extension;
+    $logFile = "/" . Log::$prefix . Log::$postfixes[$level] . Log::$extension;
 
-    @file_put_contents(CoreConfig::LOG_PATH.$logFile, $content, FILE_APPEND);
+    @file_put_contents(CoreConfig::LOG_PATH . $logFile, $content, FILE_APPEND);
   }
 
   /**
@@ -89,8 +89,8 @@ class Log
    */
   public static function logExists($level)
   {
-    $logFile = "/".Log::$prefix.Log::$postfixes[$level].Log::$extension;
-    $fullPath = CoreConfig::LOG_PATH.$logFile;
+    $logFile = "/" . Log::$prefix . Log::$postfixes[$level] . Log::$extension;
+    $fullPath = CoreConfig::LOG_PATH . $logFile;
 
     return file_exists($fullPath);
   }
@@ -114,7 +114,7 @@ class Log
     //replace variables if there is any
     if($args && is_array($args)){
       foreach($args as $key => $value){
-        $message = str_replace("{".$key."}", $value, $message);
+        $message = str_replace("{" . $key . "}", $value, $message);
       }
     }
 
@@ -122,9 +122,9 @@ class Log
     $content = str_replace("%{datetime}", $datetime, $content);
     $content = str_replace("%{message}", $message, $content);
 
-    $logFile = "/".Log::$prefix.$file.Log::$extension;
+    $logFile = "/" . Log::$prefix . $file . Log::$extension;
 
-    @file_put_contents(CoreConfig::LOG_PATH.$logFile, $content, FILE_APPEND);
+    @file_put_contents(CoreConfig::LOG_PATH . $logFile, $content, FILE_APPEND);
   }
 
   /**
@@ -190,9 +190,9 @@ class Log
    */
   public static function event($event)
   {
-    $data = "\n".$event."\n";
+    $data = "\n" . $event . "\n";
     $data .= "object >>>\n";
-    $data .= Encrypt::pack($event)."\n";
+    $data .= Encrypt::pack($event) . "\n";
     $data .= "<<< object\n";
 
     Log::handle(Log::LEVEL_EVENT, $data);
