@@ -9,18 +9,27 @@ require_once('system/Startup.class.php');
  *
  * @return WSResponse
  */
-function login($wsRequest)
+function authenticate($wsRequest)
 {
-  try{
+  try
+  {
     $username = trim($wsRequest->requireNotNullOrEmpty('username'));
     $password = trim($wsRequest->requireNotNullOrEmpty('password'));
 
-    $account = new Account($username);
+    $account = Session::getAccount($username);
     $account->authenticate($password);
 
-    $wsResponse = new WSResponseOk();
-    $wsResponse->addElement('account', $account);
-  }catch(InvalidParameterException $ex){
+    if($account->isAuthenticated()){
+      $wsResponse = new WSResponseOk();
+      $wsResponse->addElement('account', $account);
+      $wsResponse->addElement('token', Session::$sid);
+    }else{
+      $wsResponse = new WSResponseError('Invalid information!');
+    }
+
+  }
+  catch(InvalidParameterException $ex)
+  {
     $wsResponse = new WSResponseError($ex->getMessage());
   }
 
@@ -36,31 +45,14 @@ function login($wsRequest)
  */
 function getCountries($wsRequest)
 {
-  try{
+  try
+  {
     $countries = Session::getCountries();
     $wsResponse = new WSResponseOk();
     $wsResponse->addElement('countries', $countries);
-  }catch(InvalidParameterException $ex){
-    $wsResponse = new WSResponseError($ex->getMessage());
   }
-
-  return $wsResponse;
-}
-
-/**
- * get agencies
- *
- * @param WSRequest $wsRequest
- *
- * @return WSResponse
- */
-function getAgencies($wsRequest)
-{
-  try{
-    $agencies = Session::getAgencies();
-    $wsResponse = new WSResponseOk();
-    $wsResponse->addElement('agencies', $agencies);
-  }catch(InvalidParameterException $ex){
+  catch(InvalidParameterException $ex)
+  {
     $wsResponse = new WSResponseError($ex->getMessage());
   }
 

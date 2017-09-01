@@ -12,6 +12,11 @@ class CoreConfig
   const CACHE_VERSION = 1.0;
 
   /**
+   * Validate if required session
+   */
+  const REQUIRED_SESSION = true;
+
+  /**
    * define if the current environment is development or production
    *
    * @var bool

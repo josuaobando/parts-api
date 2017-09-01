@@ -11,7 +11,7 @@ class WSAccess
    *
    * @var string
    */
-  const SYS_ACCESS_PASS = 'auth';
+  const SYS_ACCESS_PASS = 'apiKey';
 
   /**
    * it retrieves the request ip address
@@ -57,25 +57,25 @@ class WSAccess
    * it checks if the access password sent is valid and is active.
    * it returns the webservice user data
    *
-   * @param string $sysAccessPass
+   * @param string $apiKey
    *
    * @throws AccessDeniedException
    *
    * @return array
    */
-  private static function checkWebserviceUser($sysAccessPass)
+  private static function checkWebserviceUser($apiKey)
   {
-    if(!$sysAccessPass){
+    if(!$apiKey){
       throw new AccessDeniedException("missing authentication key", "The access password is required");
     }
 
     $tblWSAccess = TblWSAccess::getInstance();
-    $webserviceUserData = $tblWSAccess->getWebserviceUser($sysAccessPass);
+    $webserviceUserData = $tblWSAccess->getWebserviceUser($apiKey);
     if(!$webserviceUserData){
-      throw new AccessDeniedException("invalid authentication key", "The access password is invalid: '$sysAccessPass'");
+      throw new AccessDeniedException("invalid authentication key", "The access password is invalid: '$apiKey'");
     }
     if(!$webserviceUserData['Active']){
-      throw new AccessDeniedException("authentication key not available", "The access password '$sysAccessPass' is currently inactive");
+      throw new AccessDeniedException("authentication key not available", "The access password '$apiKey' is currently inactive");
     }
 
     return $webserviceUserData;
@@ -109,8 +109,10 @@ class WSAccess
   /**
    * check the requestor IP address
    *
-   * @param string $ip
-   * @param array $webserviceUserData
+   * @param $ip
+   * @param $webserviceUserData
+   *
+   * @return mixed
    *
    * @throws AccessDeniedException
    */
@@ -149,14 +151,14 @@ class WSAccess
     $webservice = strpos($webservice, ".") ? substr($webservice, 0, strpos($webservice, ".")) : $webservice; //remove the extension
 
     //we get the access password sent with the request
-    $sysAccessPass = $wsRequest->getParam(self::SYS_ACCESS_PASS);
+    $apiKey = $wsRequest->getParam(self::SYS_ACCESS_PASS);
 
     //ip address from the requestor
     $ip = self::getRequestIP();
 
     $credentials = array();
     $credentials['method'] = $webservice;
-    $credentials['auth'] = $sysAccessPass;
+    $credentials['apiKey'] = $apiKey;
     $credentials['ip'] = $ip;
 
     return $credentials;
@@ -172,12 +174,12 @@ class WSAccess
   public static function checkCredentials($credentials)
   {
     $webservice = $credentials['method'];
-    $sysAccessPass = $credentials['auth'];
+    $apiKey = $credentials['apiKey'];
     $ip = $credentials['ip'];
 
     $webserviceData = self::checkWebservice($webservice);
-    $webserviceUserData = self::checkWebserviceUser($sysAccessPass);
-    $webserviceAccessData = self::checkWebserviceAccess($webserviceData['caWebservice_Id'], $webserviceUserData['caWebserviceUser_Id']);
+    $webserviceUserData = self::checkWebserviceUser($apiKey);
+    $webserviceAccessData = self::checkWebserviceAccess($webserviceData['Webservice_Id'], $webserviceUserData['WebserviceUser_Id']);
 
     self::checkIPs($ip, $webserviceUserData);
   }

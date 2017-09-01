@@ -48,7 +48,7 @@ class TblMQueue extends Db
    */
   public function trackDBExecution($username, $db, $host, $sql, $connect, $execute, $error)
   {
-    $statement = "CALL sysLogDB_Insert('{username}','{db}','{host}','{sql}','{sql_size}','{connect}','{execute}','{error}');";
+    $statement = "CALL spStatsDB_Add('{username}','{db}','{host}','{sql}','{sql_size}','{connect}','{execute}','{error}');";
 
     $params = array();
     $params['username'] = $username;
@@ -79,7 +79,7 @@ class TblMQueue extends Db
    */
   public function trackWSExecution($request, $response, $namelookup, $connect, $execute, $error)
   {
-    $statement = "CALL sysLogWS_Insert('{request}','{request_size}','{response}','{response_size}','{namelookup}','{connect}','{execute}','{error}');";
+    $statement = "CALL spStatsWS_Add('{request}','{request_size}','{response}','{response_size}','{namelookup}','{connect}','{execute}','{error}');";
 
     $params = array();
     $params['request'] = $request;
@@ -99,13 +99,15 @@ class TblMQueue extends Db
   /**
    * track a webservice request
    *
-   * @param string $uniqueId
-   * @param string $credentials
-   * @param string $request
+   * @param $uniqueId
+   * @param $credentials
+   * @param $request
+   *
+   * @return int
    */
   public function trackWSRequest($uniqueId, $credentials, $request)
   {
-    $statement = "CALL sysLogWSRequest_Insert('{uniqueId}', '{credentials}','{request}','{request_size}');";
+    $statement = "CALL spStatsWSRequest_Add('{uniqueId}', '{credentials}','{request}','{request_size}');";
 
     $params = array();
     $params['uniqueId'] = $uniqueId;
@@ -121,13 +123,15 @@ class TblMQueue extends Db
   /**
    * update webservice request
    *
-   * @param string $uniqueId
-   * @param string $response
-   * @param string $responseTime
+   * @param $uniqueId
+   * @param $response
+   * @param $responseTime
+   *
+   * @return int
    */
   public function trackWSRequestUpdate($uniqueId, $response, $responseTime)
   {
-    $statement = "CALL sysLogWSRequest_Update('{uniqueId}', '{response}', '{response_size}','{response_time}');";
+    $statement = "CALL spStatsWSRequest_Update('{uniqueId}', '{response}', '{response_size}','{response_time}');";
 
     $params = array();
     $params['uniqueId'] = $uniqueId;

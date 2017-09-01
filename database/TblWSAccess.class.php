@@ -36,7 +36,7 @@ class TblWSAccess extends Db
    */
   public function getWebservice($webservice)
   {
-    $sql = "CALL sysWebservice('{webservice}'); ";
+    $sql = "CALL spWebservice('{webservice}');";
 
     $params = array('webservice' => $webservice);
     $row = array();
@@ -54,7 +54,7 @@ class TblWSAccess extends Db
    */
   public function getWebserviceUser($sysAccessPass)
   {
-    $sql = "CALL sysWebserviceUser('{sysAccessPass}'); ";
+    $sql = "CALL spWebserviceUser('{sysAccessPass}');";
 
     $params = array('sysAccessPass' => $sysAccessPass);
     $row = array();
@@ -73,7 +73,7 @@ class TblWSAccess extends Db
    */
   public function getWebserviceAccess($webserviceId, $webserviceUserId)
   {
-    $sql = "CALL sysWebserviceAccess('{webserviceId}', '{webserviceUserId}'); ";
+    $sql = "CALL spWebserviceAccess('{webserviceId}', '{webserviceUserId}');";
 
     $params = array();
     $params['webserviceId'] = $webserviceId;

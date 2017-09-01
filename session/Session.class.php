@@ -26,10 +26,12 @@ class Session
    */
   public static function startSession($sessionId = null)
   {
-    if(!$sessionId){
+    if(!$sessionId)
+    {
       $sessionId = Encrypt::genKey();
     }
 
+    self::$sid = $sessionId;
     session_id($sessionId);
     session_start();
 
@@ -46,7 +48,8 @@ class Session
   public static function getSessionObject($id)
   {
     //check if the session was started
-    if(!session_id()){
+    if(!session_id())
+    {
       return null;
     }
 
@@ -64,12 +67,14 @@ class Session
    */
   public static function storeSessionObject($id, $obj, $startSession = false)
   {
-    if(!session_id() && $startSession){
+    if(!session_id() && $startSession)
+    {
       self::startSession();
     }
 
     //check if the session was started
-    if(!session_id()){
+    if(!session_id())
+    {
       return false;
     }
     $_SESSION[$id] = $obj;
@@ -88,9 +93,12 @@ class Session
   {
     $account = new Account();
     $accountSession = self::getSessionObject(self::SID_ACCOUNT);
-    if($accountSession && $accountSession instanceof Account){
+    if($accountSession && $accountSession instanceof Account)
+    {
       $account = $accountSession;
-    }elseif($username){
+    }
+    elseif($username)
+    {
       $account = new Account($username);
       self::storeSessionObject(self::SID_ACCOUNT, $account, true);
     }
@@ -106,34 +114,18 @@ class Session
   public static function getCountries()
   {
     $countriesSession = self::getSessionObject(self::SID_COUNTRIES);
-    if(!$countriesSession){
+    if(!$countriesSession)
+    {
       $tblCountry = TblCountry::getInstance();
       $countries = $tblCountry->getCountries();
       self::storeSessionObject(self::SID_COUNTRIES, $countries, true);
-    }else{
+    }
+    else
+    {
       $countries = $countriesSession;
     }
 
     return $countries;
-  }
-
-  /**
-   * get agencies
-   *
-   * @return array
-   */
-  public static function getAgencies()
-  {
-    $agenciesSession = self::getSessionObject(self::SID_AGENCIES);
-    if(!$agenciesSession){
-      $tblSystem = TblSystem::getInstance();
-      $agencies = $tblSystem->getAgencies();
-      self::storeSessionObject(self::SID_AGENCIES, $agencies, true);
-    }else{
-      $agencies = $agenciesSession;
-    }
-
-    return $agencies;
   }
 
 }
