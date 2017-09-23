@@ -19,7 +19,7 @@ function startController()
   $prefix = "ctrl_";
 
   //check if the requested function is valid
-  $action = $wsRequest->getParam('f');
+  $action = $wsRequest->getParam(WSProcessor::REQUESTED_FUNCTION);
 
   //get session id
   $sessionId = $wsRequest->getParam('token');
